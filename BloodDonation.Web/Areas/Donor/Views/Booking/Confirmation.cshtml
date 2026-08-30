@@ -1,0 +1,17 @@
+@model BloodDonation.Domain.Models.Appointment
+
+@{
+    ViewData["Title"] = "Booking Confirmed";
+}
+
+<h1>Booking Confirmed</h1>
+
+<p>You're eligible to donate. Your appointment has been booked.</p>
+
+<ul>
+    <li><strong>Appointment ID:</strong> @Model.Id</li>
+    <li><strong>Scheduled date:</strong> @Model.ScheduledDate.ToString("d")</li>
+    <li><strong>Status:</strong> @Model.Status</li>
+</ul>
+
+<a asp-action="Book">Book another appointment</a>

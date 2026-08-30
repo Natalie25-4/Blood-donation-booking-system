@@ -1,0 +1,17 @@
+@model BloodDonation.Web.Areas.Donor.Models.BookingIneligibleModel
+
+@{
+    ViewData["Title"] = "Not Eligible";
+}
+
+<h1>You're not eligible to book right now</h1>
+
+<p><strong>Failed rule:</strong> @Model.FailedRule</p>
+<p>@Model.Message</p>
+
+@if (Model.EarliestEligibleDate.HasValue)
+{
+    <p><strong>Earliest eligible date:</strong> @Model.EarliestEligibleDate.Value.ToString("d")</p>
+}
+
+<a asp-action="Book">Back to booking form</a>

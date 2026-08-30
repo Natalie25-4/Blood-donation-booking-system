@@ -1,0 +1,57 @@
+@model BloodDonation.Web.Areas.Donor.Models.BookingFormModel
+
+@{
+    ViewData["Title"] = "Book an Appointment";
+}
+
+<h1>Book a Donation Appointment</h1>
+
+<form asp-action="Book" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <div>
+        <label asp-for="DateOfBirth"></label>
+        <input asp-for="DateOfBirth" />
+        <span asp-validation-for="DateOfBirth"></span>
+    </div>
+
+    <div>
+        <label asp-for="WeightKg"></label>
+        <input asp-for="WeightKg" />
+        <span asp-validation-for="WeightKg"></span>
+    </div>
+
+    <div>
+        <label asp-for="LastDonationDate"></label>
+        <input asp-for="LastDonationDate" />
+        <span asp-validation-for="LastDonationDate"></span>
+    </div>
+
+    <fieldset>
+        <legend>Stand-down event (optional)</legend>
+
+        <div>
+            <label asp-for="HasStandDownEvent"></label>
+            <input asp-for="HasStandDownEvent" />
+        </div>
+
+        <div>
+            <label asp-for="StandDownReason"></label>
+            <select asp-for="StandDownReason" asp-items="Html.GetEnumSelectList<BloodDonation.Domain.Models.StandDownReason>()">
+                <option value="">-- Select --</option>
+            </select>
+        </div>
+
+        <div>
+            <label asp-for="StandDownEventDate"></label>
+            <input asp-for="StandDownEventDate" />
+        </div>
+
+        <div>
+            <label asp-for="StandDownDurationDays"></label>
+            <input asp-for="StandDownDurationDays" />
+        </div>
+    </fieldset>
+
+    <button type="submit">Check Eligibility &amp; Book</button>
+</form>
