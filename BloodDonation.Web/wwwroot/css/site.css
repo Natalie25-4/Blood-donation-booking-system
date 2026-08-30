@@ -526,3 +526,97 @@ body {
         font-size: 2.2rem;
     }
 }
+
+/* =========================================
+   AUTH PAGES (Login / Register)
+   ========================================= */
+
+.auth-section {
+    background: var(--cream);
+    min-height: 650px;
+    padding: 80px 8%;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--white);
+    padding: 45px;
+    border-radius: 8px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h1 {
+    color: var(--burgundy);
+    font-size: 2.2rem;
+    margin-bottom: 25px;
+}
+
+.auth-card h2 {
+    color: var(--burgundy);
+    font-size: 1.1rem;
+    margin: 30px 0 15px;
+    border-top: 1px solid var(--beige);
+    padding-top: 20px;
+}
+
+.auth-toggle {
+    display: flex;
+    max-width: 520px;
+    margin: 0 auto 20px;
+    border: 2px solid var(--burgundy);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.toggle-link {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    text-decoration: none;
+    color: var(--burgundy);
+    font-weight: 600;
+    background: var(--white);
+    transition: 0.2s ease;
+}
+
+.toggle-link.active,
+.toggle-link:hover {
+    background: var(--burgundy);
+    color: var(--white);
+}
+
+.auth-card .form-group {
+    margin-bottom: 18px;
+}
+
+.auth-card label {
+    display: block;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.auth-card .form-control {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--beige);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.auth-card .form-control:focus {
+    outline: none;
+    border-color: var(--burgundy);
+}
+
+.auth-card .form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+

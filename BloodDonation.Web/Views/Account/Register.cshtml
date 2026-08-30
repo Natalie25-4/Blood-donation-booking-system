@@ -1,0 +1,231 @@
+@{ 
+    ViewData["Title"] = "Register to Donate"; 
+} 
+ 
+<section class = "auth-section"> 
+  <div class = "auth-card"> 
+    <h1>Register to Donate</h1> 
+ 
+    <form method="post" onsubmit="return validateRegistration()"> 
+      <h2>Account Details</h2> 
+      <div class ="form-group"> 
+        <label for = "FullName">Full Name</label> 
+        <input type = "text" id = "FullName" name = "FullName" class = "form-control" required /> 
+        <span id = "FullNameError" class = "validation-message"></span>
+      </div> 
+      <div class = "form-group"> 
+        <label for = "Email">Email</label> 
+        <input type = "email" id = "Email" name = "Email" class = "form-control" required /> 
+        <span id = "EmailError" class = "validation-message"></span>
+      </div> 
+      <div class = "form-group"> 
+        <label for = "Password">Password</label> 
+        <input type = "password" id="Password" name="Password" class="form-control" required /> 
+        <small class = "form-text text-muted">At least 8 characters, with uppercase, lowercase, a number, and a symbol.</small> 
+        <span id = "PasswordError" class = "validation-message"></span>
+      </div> 
+      <div class = "form-group"> 
+        <label for = "ConfirmPassword">Confirm Password</label> 
+        <input type = "password" id="ConfirmPassword" name="ConfirmPassword" class="form-control" required /> 
+        <span id = "ConfirmPasswordError" class = "validation-message"></span>
+      </div> 
+ 
+      <h2>Donor Details</h2> 
+      <div class = "form-group"> 
+        <label for = "DateOfBirth">Date of Birth</label> 
+        <input type = "date" id = "DateOfBirth" name = "DateOfBirth" class = "form-control" required /> 
+        <span id = "DateOfBirthError" class = "validation-message"></span>
+      </div> 
+      <div class = "form-group"> 
+        <label for = "WeightKg">Weight (kg)</label> 
+        <input type ="number" id = "WeightKg" name = "WeightKg" class = "form-control" step = "0.1" min = "50" max = "200" required /> 
+        <small class = "form-text text-muted">You must weigh at least 50 kg to donate blood.</small>
+        <span id = "WeightKgError" class = "validation-message"></span>
+      </div> 
+ 
+      <h2>Eligibility Questionnaire</h2> 
+      <div class = "form-group"> 
+        <label for = "LastDonationDate">Last Donation Date</label> 
+        <input type = "date" id="LastDonationDate" name="LastDonationDate" class="form-control" /> 
+        <small class = "form-text text-muted">Leave blank if this is your first donation.</small> 
+        <span id = "LastDonationDateError" class = "validation-message"></span>
+      </div> 
+
+      <div class = "form-group"> 
+        <label for = "TattooOrPiercingDate">Most Recent Tattoo or Piercing Date</label> 
+        <input type = "date" id="TattooOrPiercingDate" name="TattooOrPiercingDate" class="form-control" /> 
+        <small class = "form-text text-muted">Leave blank if you have not recently had a tattoo or piercing.</small> 
+        <span id = "TattooOrPiercingDateError" class = "validation-message"></span>
+      </div> 
+
+      <div class="form-check"> 
+        <input type = "checkbox" id="RecentIllness" name="RecentIllness" class="form-check-input" /> 
+        <label for = "RecentIllness" class="form-check-label">I currently have a cold, flu, sore throat, cold sore, stomach bug or other infection</label> 
+        <span id = "RecentIllnessError" class = "validation-message"></span>
+      </div> 
+
+      <div class="form-check"> 
+        <input type = "checkbox" id="RecentCovid" name="RecentCovid" class="form-check-input" /> 
+        <label for = "RecentCovid" class="form-check-label">I've had COVID-19 recently</label> 
+      </div> 
+
+      <div class="form-check"> 
+        <input type = "checkbox" id="Pregnant" name="Pregnant" class="form-check-input" /> 
+        <label for = "Pregnant" class="form-check-label">I am currently pregnant</label> 
+      </div> 
+
+      <div class = "form-group"> 
+        <label for = "TravelledOverseas">Have you travelled overseas recently?</label> 
+        <select id = "TravelledOverseas" name = "TravelledOverseas" class = "form-control">
+          <option value = "">Please select</option>
+          <option value = "No">No</option>
+          <option value = "Yes">Yes</option>
+        </select>
+        <small class = "form-text text-muted">Recent overseas travel may require additional eligibility checks.</small>
+        <span id = "TravelledOverseasError" class = "validation-message"></span>
+      </div> 
+
+      <div class="form-check"> 
+        <input type = "checkbox" id="RecentBloodTransfusion" name="RecentBloodTransfusion" class="form-check-input" /> 
+        <label for = "RecentBloodTransfusion" class="form-check-label">I've received a blood transfusion in the last 3 months</label> 
+      </div> 
+
+      <div class="form-check"> 
+        <input type = "checkbox" id="RecentDentalWork" name="RecentDentalWork" class="form-check-input" /> 
+        <label for = "RecentDentalWork" class="form-check-label">I've had dental treatment recently</label> 
+      </div> 
+
+      <button type = "submit" class="btn btn-primary">Create Account</button> 
+    </form> 
+  </div> 
+</section>
+
+<script>
+    function validateRegistration() {
+        let isValid = true;
+
+        document.querySelectorAll(".validation-message").forEach(function (message) {
+            message.textContent = "";
+        });
+
+        const fullName = document.getElementById("FullName").value.trim();
+        const email = document.getElementById("Email").value.trim();
+        const password = document.getElementById("Password").value;
+        const confirmPassword = document.getElementById("ConfirmPassword").value;
+        const dateOfBirth = document.getElementById("DateOfBirth").value;
+        const weight = document.getElementById("WeightKg").value;
+        const lastDonationDate = document.getElementById("LastDonationDate").value;
+        const tattooOrPiercingDate = document.getElementById("TattooOrPiercingDate").value;
+        const travelledOverseas = document.getElementById("TravelledOverseas").value;
+
+        if (fullName === "") {
+            document.getElementById("FullNameError").textContent = "Please enter your full name.";
+            isValid = false;
+        }
+
+        if (email === "") {
+            document.getElementById("EmailError").textContent = "Please enter your email address.";
+            isValid = false;
+        }
+
+        const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+        if (email !== "" && !emailPattern.test(email)) {
+            document.getElementById("EmailError").textContent = "Please enter a valid email address.";
+            isValid = false;
+        }
+
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
+        if (password === "") {
+            document.getElementById("PasswordError").textContent = "Please enter a password.";
+            isValid = false;
+        }
+        else if (!passwordPattern.test(password)) {
+            document.getElementById("PasswordError").textContent = "Password must be at least 8 characters and include uppercase, lowercase, a number, and a symbol.";
+            isValid = false;
+        }
+
+        if (confirmPassword === "") {
+            document.getElementById("ConfirmPasswordError").textContent = "Please confirm your password.";
+            isValid = false;
+        }
+        else if (password !== confirmPassword) {
+            document.getElementById("ConfirmPasswordError").textContent = "Passwords do not match.";
+            isValid = false;
+        }
+
+        if (dateOfBirth === "") {
+            document.getElementById("DateOfBirthError").textContent = "Please enter your date of birth.";
+            isValid = false;
+        }
+        else {
+            const birthDate = new Date(dateOfBirth);
+            const today = new Date();
+
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+
+            if (monthDifference < 0 || 
+                (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            if (age < 16) {
+                document.getElementById("DateOfBirthError").textContent = "You must be at least 16 years old to donate blood.";
+                isValid = false;
+            }
+            else if (age >= 71) {
+                document.getElementById("DateOfBirthError").textContent = "First-time donors must be under 71 years old.";
+                isValid = false;
+            }
+        }
+
+        if (weight === "") {
+            document.getElementById("WeightKgError").textContent = "Please enter your weight.";
+            isValid = false;
+        }
+        else if (Number(weight) < 50) {
+            document.getElementById("WeightKgError").textContent = "You must weigh at least 50 kg to donate blood.";
+            isValid = false;
+        }
+        else if (Number(weight) > 200) {
+            document.getElementById("WeightKgError").textContent = "Please enter a weight of 200 kg or less.";
+            isValid = false;
+        }
+
+        if (lastDonationDate !== "") {
+            const today = new Date();
+            const donationDate = new Date(lastDonationDate);
+
+            if (donationDate > today) {
+                document.getElementById("LastDonationDateError").textContent = "Last donation date cannot be in the future.";
+                isValid = false;
+            }
+        }
+
+        if (tattooOrPiercingDate !== "") {
+            const today = new Date();
+            const procedureDate = new Date(tattooOrPiercingDate);
+            const threeMonthsAgo = new Date();
+
+            threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+            if (procedureDate > today) {
+                document.getElementById("TattooOrPiercingDateError").textContent = "The procedure date cannot be in the future.";
+                isValid = false;
+            }
+            else if (procedureDate > threeMonthsAgo) {
+                document.getElementById("TattooOrPiercingDateError").textContent = "You may need to wait 3 months after a tattoo or piercing before donating.";
+                isValid = false;
+            }
+        }
+
+        if (travelledOverseas === "") {
+            document.getElementById("TravelledOverseasError").textContent = "Please select an option.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+</script>
