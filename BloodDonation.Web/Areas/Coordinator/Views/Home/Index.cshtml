@@ -1,5 +1,33 @@
+@model BloodDonation.Web.Areas.Coordinator.Models.DashboardViewModel
+
 @{
-    ViewData["Title"] = "Coordinator Home";
+    ViewData["Title"] = "Coordinator Dashboard";
 }
 
-<h1>Coordinator area (placeholder)</h1>
+<h1>Coordinator Dashboard</h1>
+
+<h2>Key Metrics</h2>
+<ul>
+    <li><strong>Deferral rate:</strong> @Model.DeferralRatePercentage.ToString("0.0")%</li>
+    <li><strong>Average booking lead time:</strong> @Model.AverageBookingLeadTimeDays.ToString("0.0") days</li>
+    <li><strong>Total appointments:</strong> @Model.TotalAppointments</li>
+</ul>
+
+<h2>Appointments by Status</h2>
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Status</th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (status, count) in Model.AppointmentCountsByStatus)
+        {
+            <tr>
+                <td>@status</td>
+                <td>@count</td>
+            </tr>
+        }
+    </tbody>
+</table>
