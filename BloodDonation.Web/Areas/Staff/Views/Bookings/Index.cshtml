@@ -1,0 +1,33 @@
+@model List<BloodDonation.Web.Areas.Staff.Models.BookingListItem>
+
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+<h1>Bookings</h1>
+
+<table border="1" cellpadding="6">
+    <thead>
+        <tr>
+            <th>Appointment ID</th>
+            <th>Donor ID</th>
+            <th>Scheduled Date</th>
+            <th>Status</th>
+            <th>Deferral Reason</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Appointment.Id</td>
+                <td>@item.Appointment.DonorId</td>
+                <td>@item.Appointment.ScheduledDate.ToString("d")</td>
+                <td>@item.Appointment.Status</td>
+                <td>@item.DeferralReason</td>
+                <td><a asp-action="SetOutcome" asp-route-id="@item.Appointment.Id">Set outcome</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

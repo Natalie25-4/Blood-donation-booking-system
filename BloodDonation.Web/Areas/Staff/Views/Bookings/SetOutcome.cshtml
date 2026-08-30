@@ -1,0 +1,33 @@
+@model BloodDonation.Web.Areas.Staff.Models.SetOutcomeFormModel
+
+@{
+    ViewData["Title"] = "Set Outcome";
+}
+
+<h1>Set Outcome for Appointment #@Model.AppointmentId</h1>
+
+<form asp-action="SetOutcome" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <input type="hidden" asp-for="AppointmentId" />
+
+    <div>
+        <label asp-for="Outcome"></label>
+        <select asp-for="Outcome">
+            <option value="">-- Select --</option>
+            <option value="Donated">Donated</option>
+            <option value="Deferred">Deferred</option>
+            <option value="NoShow">NoShow</option>
+        </select>
+        <span asp-validation-for="Outcome"></span>
+    </div>
+
+    <div>
+        <label asp-for="Reason"></label>
+        <input asp-for="Reason" />
+        <span asp-validation-for="Reason"></span>
+    </div>
+
+    <button type="submit">Save Outcome</button>
+</form>
+
+<a asp-action="Index">Back to bookings</a>
