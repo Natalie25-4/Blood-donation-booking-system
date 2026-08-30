@@ -4,27 +4,44 @@ namespace BloodDonation.Domain;
 
 public class EligibilityService
 {
-    // 84-day rule (FR2)
+    // Returns false if fewer than 84 days have passed between lastDonationDate and bookingDate
     public bool IsIntervalEligible(DateTime lastDonationDate, DateTime bookingDate)
     {
-        throw new NotImplementedException();
+        var interval = bookingDate - lastDonationDate;
+        return interval.TotalDays >= 84;
     }
 
     // 16-71 rule (FR3)
     public bool IsAgeEligible(DateTime dateOfBirth, DateTime bookingDate, bool isNewDonor)
     {
-        throw new NotImplementedException();
+        var age = bookingDate.Year - dateOfBirth.Year;
+        if (dateOfBirth.Date > bookingDate.AddYears(-age)) age--;
+
+        if (isNewDonor)
+        {
+            return age >= 16 && age <= 71;
+        }
+        else
+        {
+            return age >= 16;
+        }
     }
 
     // 50kg minimum (FR4)
     public bool IsWeightEligible(double weightKg)
     {
-        throw new NotImplementedException();
+        return weightKg >= 50;
     }
 
     // Stand-down rule (FR5)
     public bool IsStandDownCleared(StandDownEvent standDownEvent, DateTime bookingDate)
     {
-        throw new NotImplementedException();
+        if (standDownEvent == null)
+        {
+            return true; // No stand-down event, eligible
+        }
+
+        var standDownEndDate = standDownEvent.EventDate.AddDays(standDownEvent.DurationDays);
+        return bookingDate >= standDownEndDate;
     }
 }
