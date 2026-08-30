@@ -12,6 +12,8 @@ builder.Services.AddScoped<AppointmentAnalyticsService>();
 
 var app = builder.Build();
 
+SampleDataSeeder.Seed(app.Services.GetRequiredService<SampleDataStore>());
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
