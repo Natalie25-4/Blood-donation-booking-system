@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:BloodDonation.Web/Pages/Index.cshtml
 ﻿@page
 @model IndexModel
 @{
@@ -8,3 +9,195 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+=======
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<section class="hero">
+    <div class="hero-content">
+
+        <div class="hero-text">
+            <span class="hero-tag">DONATE BLOOD, SAVE LIVES</span>
+
+            <h1>Give Blood.<br />Save Lives.</h1>
+
+            <p>
+                Your donation can make a difference in someone's life.
+                Join us in our mission to provide a safe and sufficient
+                blood supply for those in need. Every drop counts, and
+                your contribution can help save lives.
+            </p>
+
+            <div class="hero-buttons">
+                <a asp-controller="Donor"
+                   asp-action="Register"
+                   class="btn btn-primary">
+                    Register to Donate
+                </a>
+
+                <a href="#how-it-works"
+                   class="btn btn-secondary">
+                    Learn More
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+
+            <div class="blood-drop">
+                <span class="blood-drop-icon">♥</span>
+            </div>
+
+            <div class="hero-card">
+                <strong>One Donation Can Save Lives</strong>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<section class="impact-section">
+
+    <div class="section-heading">
+        <span>WHY DONATE?</span>
+
+        <h2>Your Donation Matters.</h2>
+
+        <p>
+            Blood is needed every day to help patients in hospitals and
+            clinics. By donating blood, you can make a meaningful difference
+            in the lives of people who need transfusions.
+        </p>
+    </div>
+
+    <div class="impact-cards">
+
+        <div class="impact-card">
+            <div class="card-icon">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+
+            <h3>Save Lives</h3>
+
+            <p>
+                Your donation can provide vital support to someone facing
+                surgery, illness, or an emergency.
+            </p>
+        </div>
+
+
+        <div class="impact-card">
+            <div class="card-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+
+            <h3>Support Your Community</h3>
+
+            <p>
+                Your donation helps maintain a strong and reliable blood
+                supply for people in your community.
+            </p>
+        </div>
+
+
+        <div class="impact-card">
+            <div class="card-icon">
+                <i class="fa-solid fa-hand-holding-medical"></i>
+            </div>
+
+            <h3>Make a Difference</h3>
+
+            <p>
+                A simple appointment can have a meaningful impact on
+                someone's life and wellbeing.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="how-section" id="how-it-works">
+
+    <div class="section-heading">
+        <span>HOW IT WORKS</span>
+
+        <h2>Four Simple Steps.</h2>
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-number">01</div>
+
+            <h3>Register</h3>
+
+            <p>
+                Create your donor profile and provide your details.
+            </p>
+        </div>
+
+
+        <div class="step">
+            <div class="step-number">02</div>
+
+            <h3>Check Eligibility</h3>
+
+            <p>
+                We'll check whether you're currently eligible to donate.
+            </p>
+        </div>
+
+
+        <div class="step">
+            <div class="step-number">03</div>
+
+            <h3>Book</h3>
+
+            <p>
+                Choose an available donation session that suits you.
+            </p>
+        </div>
+
+
+        <div class="step">
+            <div class="step-number">04</div>
+
+            <h3>Donate</h3>
+
+            <p>
+                Attend your appointment and help save lives.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="cta-section">
+
+    <div class="cta-content">
+
+        <span>READY TO MAKE A DIFFERENCE?</span>
+
+        <h2>Your Donation Could Be Someone's Tomorrow.</h2>
+
+        <p>
+            Register today and take the first step towards becoming a donor.
+        </p>
+
+        <a asp-controller="Donor"
+           asp-action="Register"
+           class="btn btn-light">
+            Get Started
+        </a>
+
+    </div>
+
+</section>
+>>>>>>> Stashed changes:BloodDonation.Web/Views/Home/Index.cshtml
