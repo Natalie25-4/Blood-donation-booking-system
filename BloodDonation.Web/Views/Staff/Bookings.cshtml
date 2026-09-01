@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "Manage Bookings";
+
+    var bookings = new[]
+    {
+        new { Time = "9:15 AM", Donor = "Sarah Chen", BloodType = "O+", Status = "Confirmed" },
+        new { Time = "9:45 AM", Donor = "James Patel", BloodType = "A-", Status = "Confirmed" },
+        new { Time = "10:30 AM", Donor = "Aroha Ngata", BloodType = "Unknown", Status = "Flagged" },
+        new { Time = "11:00 AM", Donor = "Liam O'Connor", BloodType = "B+", Status = "Confirmed" },
+    };
+}
+
+<section class="dashboard-header">
+    <div class="dashboard-header-content">
+        <div>
+            <span class="dashboard-tag">STAFF PORTAL</span>
+            <h1>Manage Bookings</h1>
+        </div>
+        <a asp-controller="Staff" asp-action="Dashboard" class="btn btn-light">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="dashboard-body">
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Today's Bookings</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Donor</th>
+                    <th>Blood Type</th>
+                    <th>Status</th>
+                    <th>Outcome</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var booking in bookings)
+                {
+                    <tr>
+                        <td>@booking.Time</td>
+                        <td>@booking.Donor</td>
+                        <td>@booking.BloodType</td>
+                        <td>
+                            @if (booking.Status == "Flagged")
+                            {
+                                <span style="color: #b3261e; font-weight: 600;">@booking.Status</span>
+                            }
+                            else
+                            {
+                                <span>@booking.Status</span>
+                            }
+                        </td>
+                        <td>
+                            <form method="post" asp-controller="Staff" asp-action="RecordOutcome" style="display:inline;">
+                                <input type="hidden" name="Donor" value="@booking.Donor" />
+                                <button type="submit" name="Outcome" value="Donated" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Donated</button>
+                                <button type="submit" name="Outcome" value="Deferred" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Deferred</button>
+                                <button type="submit" name="Outcome" value="NoShow" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">No-Show</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</section>

@@ -1,0 +1,102 @@
+@{
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<section class="dashboard-section">
+
+    <div class="dashboard-container">
+
+        <div class="dashboard-header">
+            <div>
+                <span class="dashboard-tag">STAFF PORTAL</span>
+
+                <h1>Staff Dashboard</h1>
+
+                <p>
+                    Manage donor appointments, eligibility, and donation
+                    records from one place.
+                </p>
+            </div>
+
+            <a asp-controller="Account"
+               asp-action="StaffLogin"
+               class="btn btn-secondary">
+                Sign Out
+            </a>
+        </div>
+
+
+        <div class="dashboard-cards">
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+
+                <h2>Appointments</h2>
+
+                <p>
+                    View and manage upcoming blood donation appointments.
+                </p>
+
+                <a href="#" class="dashboard-link">
+                    View Appointments
+                </a>
+            </div>
+
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <h2>Donors</h2>
+
+                <p>
+                    View donor information and eligibility details.
+                </p>
+
+                <a href="#" class="dashboard-link">
+                    View Donors
+                </a>
+            </div>
+
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+
+                <h2>Donation Records</h2>
+
+                <p>
+                    Record and review completed blood donations.
+                </p>
+
+                <a href="#" class="dashboard-link">
+                    View Records
+                </a>
+            </div>
+
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+
+                <h2>Eligibility</h2>
+
+                <p>
+                    Review donor eligibility and screening information.
+                </p>
+
+                <a href="#" class="dashboard-link">
+                    Check Eligibility
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

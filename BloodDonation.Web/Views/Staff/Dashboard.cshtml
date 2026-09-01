@@ -1,0 +1,66 @@
+@{
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<section class="dashboard-header">
+    <div class="dashboard-header-content">
+        <div>
+            <span class="dashboard-tag">STAFF DASHBOARD</span>
+            <h1>Today's Overview</h1>
+        </div>
+        <a href="#" class="btn btn-light">Manage Sessions</a>
+    </div>
+</section>
+
+<section class="dashboard-body">
+
+    <div class="stat-cards">
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Today's Sessions", Value = "0", IconClass = "fa-solid fa-calendar-day" })
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Bookings Today", Value = "0", IconClass = "fa-solid fa-clipboard-list" })
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Flagged Donors", Value = "0", IconClass = "fa-solid fa-triangle-exclamation" })
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "No-Shows", Value = "0", IconClass = "fa-solid fa-user-xmark" })
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Today's Bookings</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Donor</th>
+                    <th>Blood Type</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="5" class="dashboard-table-empty">No bookings scheduled for today.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Flagged / Deferred Donors</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Donor</th>
+                    <th>Reason</th>
+                    <th>Eligible From</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" class="dashboard-table-empty">No flagged donors.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
