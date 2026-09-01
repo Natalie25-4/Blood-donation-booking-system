@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Staff Login";
+}
+
+<section class="auth-section">
+
+    <div class="auth-card">
+
+        <h1>Staff Login</h1>
+
+        <p class="auth-description">
+            Sign in to access the blood donation staff portal.
+        </p>
+
+        <form method="post"
+              asp-controller="Account"
+              asp-action="StaffLogin">
+
+            <div class="form-group">
+                <label for="Email">Staff Email</label>
+
+                <input type="email"
+                       id="Email"
+                       name="Email"
+                       class="form-control"
+                       placeholder="Enter your staff email"
+                       required />
+            </div>
+
+            <div class="form-group">
+                <label for="Password">Password</label>
+
+                <input type="password"
+                       id="Password"
+                       name="Password"
+                       class="form-control"
+                       placeholder="Enter your password"
+                       required />
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Sign In
+            </button>
+
+        </form>
+
+        <div class="auth-links">
+            <p>
+                Are you a donor?
+                <a asp-controller="Account"
+                   asp-action="Login">
+                    Donor Login
+                </a>
+            </p>
+        </div>
+
+    </div>
+
+</section>

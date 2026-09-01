@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Book an Appointment";
+
+    var sessions = new[]
+    {
+        new { Id = "S1", Date = "Mon 8 Sep 2026", Time = "9:00 AM - 12:00 PM", Location = "Auckland City Centre", SpotsLeft = 6 },
+        new { Id = "S2", Date = "Wed 10 Sep 2026", Time = "1:00 PM - 4:00 PM", Location = "Auckland City Centre", SpotsLeft = 2 },
+        new { Id = "S3", Date = "Fri 12 Sep 2026", Time = "9:00 AM - 12:00 PM", Location = "North Shore Clinic", SpotsLeft = 9 },
+        new { Id = "S4", Date = "Sat 13 Sep 2026", Time = "10:00 AM - 2:00 PM", Location = "North Shore Clinic", SpotsLeft = 0 },
+    };
+}
+
+<section class="auth-section">
+    <div class="auth-card" style="max-width: 640px;">
+        <h1>Book an Appointment</h1>
+        <p class="auth-description">
+            Choose an available session below. You'll be asked to confirm your eligibility before your appointment.
+        </p>
+
+        <form method="post" asp-controller="Donor" asp-action="Book">
+
+            <h2>Available Sessions</h2>
+
+            @foreach (var session in sessions)
+            {
+                <div class="form-check" style="align-items: flex-start; @(session.SpotsLeft == 0 ? "opacity: 0.5;" : "")">
+                    <input type="radio"
+                           id="session-@session.Id"
+                           name="SessionId"
+                           value="@session.Id"
+                           class="form-check-input"
+                           style="margin-top: 4px;"
+                           @(session.SpotsLeft == 0 ? "disabled" : "")
+                           required />
+                    <label for="session-@session.Id" class="form-check-label">
+                        <strong>@session.Date</strong> &middot; @session.Time<br />
+                        <span style="color: var(--muted); font-size: 0.85rem;">
+                            @session.Location &mdash;
+                            @(session.SpotsLeft == 0 ? "Fully booked" : $"{session.SpotsLeft} spots left")
+                        </span>
+                    </label>
+                </div>
+            }
+
+            <h2>Donation Details</h2>
+            <div class="form-group">
+                <label for="BloodType">Blood Type (if known)</label>
+                <select id="BloodType" name="BloodType" class="form-control">
+                    <option value="">Prefer not to say / Unknown</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Notes">Notes for staff (optional)</label>
+                <textarea id="Notes" name="Notes" class="form-control" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+        </form>
+    </div>
+</section>

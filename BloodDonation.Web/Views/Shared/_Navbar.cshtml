@@ -1,0 +1,44 @@
+<nav class="site-navbar">
+    <div class="site-navbar-container">
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="site-navbar-brand">
+            Blood Donation
+        </a>
+
+        <div class="site-navbar-links">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="site-navbar-link">
+                Home
+            </a>
+
+            <a href="/#how-it-works"
+               class="site-navbar-link">
+                How It Works
+            </a>
+
+            <a asp-controller="Account"
+               asp-action="Login"
+               class="site-navbar-link">
+                Login
+            </a>
+
+            <a asp-controller="Account"
+               asp-action="StaffLogin"
+               class="site-navbar-link">
+                Staff Login
+            </a>
+
+            <a asp-controller="Account"
+               asp-action="Register"
+               class="site-navbar-button">
+                Register
+            </a>
+
+        </div>
+
+    </div>
+</nav>

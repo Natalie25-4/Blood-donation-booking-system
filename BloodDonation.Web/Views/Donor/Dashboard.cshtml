@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<section class="dashboard-header">
+    <div class="dashboard-header-content">
+        <div>
+            <span class="dashboard-tag">DONOR DASHBOARD</span>
+            <h1>Welcome back</h1>
+        </div>
+        <a asp-controller="Donor" asp-action="Book" class="btn btn-light">Book an Appointment</a>
+    </div>
+</section>
+
+<section class="dashboard-body">
+
+    <div class="stat-cards">
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Next Appointment", Value = "Not booked", IconClass = "fa-solid fa-calendar-days" })
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Donations Made", Value = "0", IconClass = "fa-solid fa-droplet" })
+        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Eligibility Status", Value = "Eligible", IconClass = "fa-solid fa-circle-check" })
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Upcoming Appointment</h2>
+        </div>
+        <div class="dashboard-empty-state">
+            <p>You don't have an upcoming appointment booked.</p>
+            <a asp-controller="Donor" asp-action="Book" class="btn btn-secondary">Book Now</a>
+        </div>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Donation History</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="3" class="dashboard-table-empty">No donation history yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
