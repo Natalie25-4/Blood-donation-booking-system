@@ -1,45 +1,62 @@
+@using BloodDonation.Web.Models
 @{
     ViewData["Title"] = "Book an Appointment";
-
-    var sessions = new[]
-    {
-        new { Id = "S1", Date = "Mon 8 Sep 2026", Time = "9:00 AM - 12:00 PM", Location = "Auckland City Centre", SpotsLeft = 6 },
-        new { Id = "S2", Date = "Wed 10 Sep 2026", Time = "1:00 PM - 4:00 PM", Location = "Auckland City Centre", SpotsLeft = 2 },
-        new { Id = "S3", Date = "Fri 12 Sep 2026", Time = "9:00 AM - 12:00 PM", Location = "North Shore Clinic", SpotsLeft = 9 },
-        new { Id = "S4", Date = "Sat 13 Sep 2026", Time = "10:00 AM - 2:00 PM", Location = "North Shore Clinic", SpotsLeft = 0 },
-    };
+    var sessions = ViewBag.Sessions as List<DonationSession>;
 }
 
 <section class="auth-section">
     <div class="auth-card" style="max-width: 640px;">
         <h1>Book an Appointment</h1>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error">@TempData["Error"]</div>
+        }
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-info">@TempData["Message"]</div>
+        }
+
         <p class="auth-description">
             Choose an available session below. You'll be asked to confirm your eligibility before your appointment.
         </p>
 
         <form method="post" asp-controller="Donor" asp-action="Book">
 
+            <h2>Your Details</h2>
+            <div class="form-group">
+                <label for="DonorName">Full Name</label>
+                <input type="text" id="DonorName" name="DonorName" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="DonorEmail">Email</label>
+                <input type="email" id="DonorEmail" name="DonorEmail" class="form-control" required />
+            </div>
+
             <h2>Available Sessions</h2>
 
-            @foreach (var session in sessions)
+            @if (sessions != null)
             {
-                <div class="form-check" style="align-items: flex-start; @(session.SpotsLeft == 0 ? "opacity: 0.5;" : "")">
-                    <input type="radio"
-                           id="session-@session.Id"
-                           name="SessionId"
-                           value="@session.Id"
-                           class="form-check-input"
-                           style="margin-top: 4px;"
-                           @(session.SpotsLeft == 0 ? "disabled" : "")
-                           required />
-                    <label for="session-@session.Id" class="form-check-label">
-                        <strong>@session.Date</strong> &middot; @session.Time<br />
-                        <span style="color: var(--muted); font-size: 0.85rem;">
-                            @session.Location &mdash;
-                            @(session.SpotsLeft == 0 ? "Fully booked" : $"{session.SpotsLeft} spots left")
-                        </span>
-                    </label>
-                </div>
+                @foreach (var session in sessions)
+                {
+                    <div class="form-check" style="align-items: flex-start; @(session.SpotsLeft <= 0 ? "opacity: 0.5;" : "")">
+                        <input type="radio"
+                               id="session-@session.Id"
+                               name="SessionId"
+                               value="@session.Id"
+                               class="form-check-input"
+                               style="margin-top: 4px;"
+                               @(session.SpotsLeft <= 0 ? "disabled" : "")
+                               required />
+                        <label for="session-@session.Id" class="form-check-label">
+                            <strong>@session.SessionDate.ToString("dddd d MMM yyyy")</strong> &middot; @session.Time<br />
+                            <span style="color: var(--muted); font-size: 0.85rem;">
+                                @session.Location &mdash;
+                                @(session.SpotsLeft <= 0 ? "Fully booked" : $"{session.SpotsLeft} spots left")
+                            </span>
+                        </label>
+                    </div>
+                }
             }
 
             <h2>Donation Details</h2>

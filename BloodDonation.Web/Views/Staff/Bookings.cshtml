@@ -1,13 +1,6 @@
 @{
     ViewData["Title"] = "Manage Bookings";
-
-    var bookings = new[]
-    {
-        new { Time = "9:15 AM", Donor = "Sarah Chen", BloodType = "O+", Status = "Confirmed" },
-        new { Time = "9:45 AM", Donor = "James Patel", BloodType = "A-", Status = "Confirmed" },
-        new { Time = "10:30 AM", Donor = "Aroha Ngata", BloodType = "Unknown", Status = "Flagged" },
-        new { Time = "11:00 AM", Donor = "Liam O'Connor", BloodType = "B+", Status = "Confirmed" },
-    };
+    var bookings = ViewBag.Bookings as System.Collections.Generic.List<dynamic>;
 }
 
 <section class="dashboard-header">
@@ -22,45 +15,81 @@
 
 <section class="dashboard-body">
 
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+
     <div class="dashboard-panel">
         <div class="dashboard-panel-header">
-            <h2>Today's Bookings</h2>
+            <h2>All Bookings</h2>
         </div>
         <table class="dashboard-table">
             <thead>
                 <tr>
-                    <th>Time</th>
+                    <th>Session</th>
                     <th>Donor</th>
                     <th>Blood Type</th>
                     <th>Status</th>
-                    <th>Outcome</th>
+                    <th>Record Outcome</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var booking in bookings)
+                @if (bookings != null && bookings.Count > 0)
+                {
+                    var rowIndex = 0;
+                    foreach (var item in bookings)
+                    {
+                        rowIndex++;
+                        <tr>
+                            <td>@item.Session?.SessionDate.ToString("d MMM yyyy") &mdash; @item.Session?.Time</td>
+                            <td>@item.Booking.DonorName</td>
+                            <td>@(string.IsNullOrEmpty(item.Booking.BloodType) ? "Unknown" : item.Booking.BloodType)</td>
+                            <td>
+                                @if (item.Booking.Status == "Deferred")
+                                {
+                                    <span style="color: #b3261e; font-weight: 600;">@item.Booking.Status</span>
+                                    @if (!string.IsNullOrEmpty(item.Booking.DeferralReason))
+                                    {
+                                        <br />
+                                        <span style="color: var(--muted); font-size: 0.8rem;">(@item.Booking.DeferralReason)</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span>@item.Booking.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <form method="post" asp-controller="Staff" asp-action="RecordOutcome" style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                    <input type="hidden" name="BookingId" value="@item.Booking.Id" />
+
+                                    <select name="Outcome" class="form-control outcome-select" data-row="@rowIndex" style="padding: 6px 10px; font-size: 0.85rem; width: auto;">
+                                        <option value="Donated">Donated</option>
+                                        <option value="Deferred">Deferred</option>
+                                        <option value="NoShow">No-Show</option>
+                                    </select>
+
+                                    <select name="DeferralReason" class="form-control reason-select-@rowIndex" style="padding: 6px 10px; font-size: 0.85rem; width: auto; display: none;">
+                                        <option value="">Select reason</option>
+                                        <option value="Low weight">Low weight</option>
+                                        <option value="Interval not met">Interval not met (too soon since last donation)</option>
+                                        <option value="Active stand-down">Active stand-down (tattoo/piercing/illness/travel)</option>
+                                        <option value="Age requirement">Age requirement not met</option>
+                                        <option value="Health screening">Failed health screening on the day</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+
+                                    <button type="submit" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@booking.Time</td>
-                        <td>@booking.Donor</td>
-                        <td>@booking.BloodType</td>
-                        <td>
-                            @if (booking.Status == "Flagged")
-                            {
-                                <span style="color: #b3261e; font-weight: 600;">@booking.Status</span>
-                            }
-                            else
-                            {
-                                <span>@booking.Status</span>
-                            }
-                        </td>
-                        <td>
-                            <form method="post" asp-controller="Staff" asp-action="RecordOutcome" style="display:inline;">
-                                <input type="hidden" name="Donor" value="@booking.Donor" />
-                                <button type="submit" name="Outcome" value="Donated" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Donated</button>
-                                <button type="submit" name="Outcome" value="Deferred" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Deferred</button>
-                                <button type="submit" name="Outcome" value="NoShow" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">No-Show</button>
-                            </form>
-                        </td>
+                        <td colspan="5" class="dashboard-table-empty">No bookings yet.</td>
                     </tr>
                 }
             </tbody>
@@ -68,3 +97,13 @@
     </div>
 
 </section>
+
+<script>
+    document.querySelectorAll('.outcome-select').forEach(function (select) {
+        select.addEventListener('change', function () {
+            var row = this.getAttribute('data-row');
+            var reasonSelect = document.querySelector('.reason-select-' + row);
+            reasonSelect.style.display = this.value === 'Deferred' ? 'inline-block' : 'none';
+        });
+    });
+</script>

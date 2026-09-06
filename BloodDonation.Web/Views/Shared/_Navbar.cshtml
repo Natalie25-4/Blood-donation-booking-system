@@ -1,40 +1,48 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    string ActiveClass(string controller, string action)
+    {
+        return (currentController == controller && currentAction == action) ? "active" : "";
+    }
+}
+
 <nav class="site-navbar">
     <div class="site-navbar-container">
 
-        <a asp-controller="Home"
-           asp-action="Index"
-           class="site-navbar-brand">
+        <a asp-controller="Home" asp-action="Index" class="site-navbar-brand">
             Blood Donation
         </a>
 
         <div class="site-navbar-links">
 
-            <a asp-controller="Home"
-               asp-action="Index"
-               class="site-navbar-link">
+            <a asp-controller="Home" asp-action="Index"
+               class="site-navbar-link @ActiveClass("Home", "Index")">
                 Home
             </a>
 
-            <a href="/#how-it-works"
-               class="site-navbar-link">
+            <a href="/#how-it-works" class="site-navbar-link">
                 How It Works
             </a>
 
-            <a asp-controller="Account"
-               asp-action="Login"
-               class="site-navbar-link">
-                Login
+            <a asp-controller="Account" asp-action="Login"
+               class="site-navbar-link @ActiveClass("Account", "Login")">
+                Donor Login
             </a>
 
-            <a asp-controller="Account"
-               asp-action="StaffLogin"
-               class="site-navbar-link">
+            <a asp-controller="Account" asp-action="StaffLogin"
+               class="site-navbar-link @ActiveClass("Account", "StaffLogin")">
                 Staff Login
             </a>
 
-            <a asp-controller="Account"
-               asp-action="Register"
-               class="site-navbar-button">
+            <a asp-controller="Coordinator" asp-action="Dashboard"
+               class="site-navbar-link @ActiveClass("Coordinator", "Dashboard")">
+                Coordinator
+            </a>
+
+            <a asp-controller="Account" asp-action="Register"
+               class="site-navbar-button @ActiveClass("Account", "Register")">
                 Register
             </a>
 

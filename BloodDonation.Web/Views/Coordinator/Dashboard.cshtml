@@ -1,0 +1,143 @@
+@using BloodDonation.Web.Models
+@{
+    ViewData["Title"] = "Coordinator Dashboard";
+    var bookings = ViewBag.FilteredBookings as List<Booking>;
+    var stockLevels = ViewBag.StockLevels as Dictionary<string, int>;
+    var deferralReasons = ViewBag.DeferralReasons as IEnumerable<dynamic>;
+}
+
+<section class="dashboard-header">
+    <div class="dashboard-header-content">
+        <div>
+            <span class="dashboard-tag">COORDINATOR PORTAL</span>
+            <h1>Service Overview</h1>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-body">
+
+    <div class="stat-cards">
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Bookings vs Capacity", Value = $"{ViewBag.TotalBooked}/{ViewBag.TotalCapacity}", IconClass = "fa-solid fa-chart-simple" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Deferral Rate", Value = $"{ViewBag.DeferralRate}%", IconClass = "fa-solid fa-triangle-exclamation" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "No-Show Rate", Value = $"{ViewBag.NoShowRate}%", IconClass = "fa-solid fa-user-xmark" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Avg. Booking Lead Time", Value = $"{ViewBag.AvgLeadTime} days", IconClass = "fa-solid fa-clock" })
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Stock Levels by Blood Type</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Blood Type</th>
+                    <th>Units in Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (stockLevels != null)
+                {
+                    foreach (var stock in stockLevels)
+                    {
+                        <tr>
+                            <td>@stock.Key</td>
+                            <td>@stock.Value</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <p style="padding: 15px 25px; color: var(--muted); font-size: 0.85rem;">
+            Starting figures are seeded sample data; totals increase automatically whenever staff record a "Donated" outcome for a booking with a known blood type.
+        </p>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Deferral Reasons</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Reason</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (deferralReasons != null && deferralReasons.Any())
+                {
+                    foreach (var reason in deferralReasons)
+                    {
+                        <tr>
+                            <td>@reason.Reason</td>
+                            <td>@reason.Count</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="dashboard-table-empty">No deferrals recorded yet.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Bookings</h2>
+        </div>
+
+        <form method="get" asp-controller="Coordinator" asp-action="Dashboard" style="padding: 20px 25px; display: flex; gap: 15px; border-bottom: 1px solid var(--beige);">
+            <select name="bloodType" class="form-control" style="max-width: 200px;" onchange="this.form.submit()">
+                <option value="">All Blood Types</option>
+                @foreach (var bt in new[] { "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-" })
+                {
+                    <option value="@bt" selected="@(ViewBag.SelectedBloodType == bt)">@bt</option>
+                }
+            </select>
+
+            <select name="status" class="form-control" style="max-width: 200px;" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                @foreach (var st in new[] { "Confirmed", "Donated", "Deferred", "NoShow" })
+                {
+                    <option value="@st" selected="@(ViewBag.SelectedStatus == st)">@st</option>
+                }
+            </select>
+        </form>
+
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Donor</th>
+                    <th>Blood Type</th>
+                    <th>Status</th>
+                    <th>Booked</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (bookings != null && bookings.Count > 0)
+                {
+                    foreach (var b in bookings)
+                    {
+                        <tr>
+                            <td>@b.DonorName</td>
+                            <td>@(string.IsNullOrEmpty(b.BloodType) ? "Unknown" : b.BloodType)</td>
+                            <td>@b.Status</td>
+                            <td>@b.CreatedAt.ToString("dd MMM, h:mm tt")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="dashboard-table-empty">No bookings match the selected filters.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</section>

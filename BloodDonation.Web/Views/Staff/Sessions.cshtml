@@ -1,0 +1,81 @@
+@using BloodDonation.Web.Models
+@{
+    ViewData["Title"] = "Manage Sessions";
+    var sessions = ViewBag.Sessions as List<DonationSession>;
+}
+
+<section class="dashboard-header">
+    <div class="dashboard-header-content">
+        <div>
+            <span class="dashboard-tag">STAFF PORTAL</span>
+            <h1>Manage Sessions</h1>
+        </div>
+        <a asp-controller="Staff" asp-action="Dashboard" class="btn btn-light">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="dashboard-body">
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>Add New Session</h2>
+        </div>
+        <form method="post" asp-controller="Staff" asp-action="Sessions" style="padding: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label for="SessionDate">Date</label>
+                <input type="date" id="SessionDate" name="SessionDate" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="Time">Time</label>
+                <input type="text" id="Time" name="Time" class="form-control" placeholder="e.g. 9:00 AM - 12:00 PM" required />
+            </div>
+            <div class="form-group">
+                <label for="Location">Location</label>
+                <input type="text" id="Location" name="Location" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="Capacity">Capacity</label>
+                <input type="number" id="Capacity" name="Capacity" class="form-control" min="1" required />
+            </div>
+            <button type="submit" class="btn btn-primary" style="grid-column: span 2; justify-self: start;">Add Session</button>
+        </form>
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="dashboard-panel-header">
+            <h2>All Sessions</h2>
+        </div>
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Capacity</th>
+                    <th>Spots Left</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (sessions != null)
+                {
+                    foreach (var s in sessions)
+                    {
+                        <tr>
+                            <td>@s.SessionDate.ToString("d MMM yyyy")</td>
+                            <td>@s.Time</td>
+                            <td>@s.Location</td>
+                            <td>@s.Capacity</td>
+                            <td>@s.SpotsLeft</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</section>

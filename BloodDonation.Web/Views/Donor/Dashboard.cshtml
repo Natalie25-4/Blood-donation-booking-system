@@ -1,5 +1,8 @@
+@using BloodDonation.Web.Models
 @{
     ViewData["Title"] = "My Dashboard";
+    var booking = ViewBag.Booking as Booking;
+    var session = ViewBag.Session as DonationSession;
 }
 
 <section class="dashboard-header">
@@ -14,20 +17,51 @@
 
 <section class="dashboard-body">
 
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">@TempData["Message"]</div>
+    }
+
     <div class="stat-cards">
-        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Next Appointment", Value = "Not booked", IconClass = "fa-solid fa-calendar-days" })
-        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Donations Made", Value = "0", IconClass = "fa-solid fa-droplet" })
-        @await Html.PartialAsync("_DashboardStatCard", new BloodDonation.Web.Models.DashboardStat { Label = "Eligibility Status", Value = "Eligible", IconClass = "fa-solid fa-circle-check" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Next Appointment", Value = session != null ? session.SessionDate.ToString("d MMM yyyy") : "Not booked", IconClass = "fa-solid fa-calendar-days" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Donations Made", Value = "0", IconClass = "fa-solid fa-droplet" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Eligibility Status", Value = "Eligible", IconClass = "fa-solid fa-circle-check" })
     </div>
 
     <div class="dashboard-panel">
         <div class="dashboard-panel-header">
             <h2>Upcoming Appointment</h2>
         </div>
-        <div class="dashboard-empty-state">
-            <p>You don't have an upcoming appointment booked.</p>
-            <a asp-controller="Donor" asp-action="Book" class="btn btn-secondary">Book Now</a>
-        </div>
+
+        @if (booking != null && session != null)
+        {
+            <div style="padding: 25px;">
+                <p><strong>@session.SessionDate.ToString("dddd d MMM yyyy")</strong> &middot; @session.Time</p>
+                <p style="color: var(--muted);">@session.Location</p>
+                @if (!string.IsNullOrEmpty(booking.BloodType))
+                {
+                    <p style="color: var(--muted);">Blood type: @booking.BloodType</p>
+                }
+
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <form method="post" asp-controller="Donor" asp-action="Reschedule">
+                        <input type="hidden" name="BookingId" value="@booking.Id" />
+                        <button type="submit" class="btn btn-secondary">Reschedule</button>
+                    </form>
+                    <form method="post" asp-controller="Donor" asp-action="Cancel" onsubmit="return confirm('Cancel this appointment?');">
+                        <input type="hidden" name="BookingId" value="@booking.Id" />
+                        <button type="submit" class="btn btn-secondary">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="dashboard-empty-state">
+                <p>You don't have an upcoming appointment booked.</p>
+                <a asp-controller="Donor" asp-action="Book" class="btn btn-secondary">Book Now</a>
+            </div>
+        }
     </div>
 
     <div class="dashboard-panel">

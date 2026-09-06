@@ -98,6 +98,17 @@ body {
     color: var(--white);
 }
 
+.site-navbar-link.active {
+    color: var(--burgundy);
+    font-weight: 700;
+    border-bottom: 2px solid var(--burgundy);
+    padding-bottom: 4px;
+}
+
+.site-navbar-button.active {
+    background: var(--burgundy-dark);
+    border-color: var(--burgundy-dark);
+}
 
 /* =========================================
    BUTTONS
@@ -795,4 +806,27 @@ body {
 .auth-card .form-check label {
     margin-bottom: 0;
     line-height: 1.5;
+}
+
+/* =========================================
+   ALERTS
+   ========================================= */
+
+.alert {
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.alert-info {
+    background: var(--cream);
+    border: 1px solid var(--beige);
+    color: var(--burgundy);
+}
+
+.alert-error {
+    background: #fbeaea;
+    border: 1px solid #e6b3b3;
+    color: #b3261e;
 }

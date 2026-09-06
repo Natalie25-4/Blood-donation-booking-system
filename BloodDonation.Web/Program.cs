@@ -9,7 +9,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<SampleDataStore>();
 builder.Services.AddScoped<EligibilityService>();
 builder.Services.AddScoped<AppointmentAnalyticsService>();
-
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+});
 var app = builder.Build();
 
 SampleDataSeeder.Seed(app.Services.GetRequiredService<SampleDataStore>());
@@ -24,6 +29,8 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 
