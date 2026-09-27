@@ -7,6 +7,15 @@
     <h1>Register to Donate</h1> 
  
     <form method="post" onsubmit="return validateRegistration()"> 
+      @if (ViewData["RegisterErrors"] is string[] registerErrors)
+      {
+        <div class="alert alert-error" role="alert">
+          @foreach (var error in registerErrors)
+          {
+            <div>@error</div>
+          }
+        </div>
+      }
       <h2>Account Details</h2> 
       <div class ="form-group"> 
         <label for = "FullName">Full Name</label> 

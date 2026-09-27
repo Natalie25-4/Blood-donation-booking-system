@@ -1,3 +1,5 @@
+using BloodDonation.Web.Identity;
+using Microsoft.AspNetCore.Authorization;
 using BloodDonation.Domain;
 using BloodDonation.Domain.Models;
 using BloodDonation.Web.Areas.Donor.Models;
@@ -8,6 +10,7 @@ using DonorModel = BloodDonation.Domain.Models.Donor;
 namespace BloodDonation.Web.Areas.Donor.Controllers;
 
 [Area("Donor")]
+[Authorize(Roles = Roles.Donor)]
 public class BookingController : Controller
 {
     private readonly EligibilityService _eligibilityService;

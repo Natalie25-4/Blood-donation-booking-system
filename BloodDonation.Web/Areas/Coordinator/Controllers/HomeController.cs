@@ -1,3 +1,5 @@
+using BloodDonation.Web.Identity;
+using Microsoft.AspNetCore.Authorization;
 using BloodDonation.Domain;
 using BloodDonation.Domain.Models;
 using BloodDonation.Web.Areas.Coordinator.Models;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BloodDonation.Web.Areas.Coordinator.Controllers;
 
 [Area("Coordinator")]
+[Authorize(Roles = Roles.Coordinator)]
 public class HomeController : Controller
 {
     private readonly AppointmentAnalyticsService _analyticsService;

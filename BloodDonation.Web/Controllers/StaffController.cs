@@ -1,8 +1,11 @@
+using BloodDonation.Web.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BloodDonation.Web.Data;
 
 namespace BloodDonation.Web.Controllers
 {
+    [Authorize(Roles = Roles.Staff)]
     public class StaffController : Controller
     {
         [HttpGet]

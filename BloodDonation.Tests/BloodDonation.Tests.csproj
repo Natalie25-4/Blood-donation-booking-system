@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
     <PackageReference Include="MSTest" Version="4.0.2" />
   </ItemGroup>
 
@@ -17,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BloodDonation.Domain\BloodDonation.Domain.csproj" />
+    <ProjectReference Include="..\BloodDonation.Web\BloodDonation.Web.csproj" />
   </ItemGroup>
 
 </Project>

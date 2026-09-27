@@ -1,10 +1,31 @@
 using BloodDonation.Domain;
 using BloodDonation.Web.Data;
+using BloodDonation.Web.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// One in-memory Identity store per app instance, so test hosts do not share users or roles.
+var identityDatabaseName = $"BloodDonationIdentity-{Guid.NewGuid()}";
+builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+    options.UseInMemoryDatabase(identityDatabaseName));
+builder.Services
+    .AddIdentity<IdentityUser, IdentityRole>(options =>
+    {
+        // Matches the rule shown on the register page.
+        options.Password.RequiredLength = 8;
+    })
+    .AddEntityFrameworkStores<AppIdentityDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
 
 builder.Services.AddSingleton<SampleDataStore>();
 builder.Services.AddScoped<EligibilityService>();
@@ -18,6 +39,7 @@ builder.Services.AddSession(options =>
 var app = builder.Build();
 
 SampleDataSeeder.Seed(app.Services.GetRequiredService<SampleDataStore>());
+await IdentitySeeder.SeedAsync(app.Services, app.Configuration, app.Environment);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -32,6 +54,7 @@ app.UseRouting();
 
 app.UseSession();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

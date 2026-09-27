@@ -11,9 +11,16 @@
         </p>
 
         <form method="post" asp-controller="Account" asp-action="Login">
+            @if (ViewData["LoginError"] is string loginError)
+            {
+                <div class="alert alert-error" role="alert">@loginError</div>
+            }
+
+            <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
             <div class="form-group">
                 <label for="Email">Email</label>
-                <input type="email" id="Email" name="Email" class="form-control" required />
+                <input type="email" id="Email" name="Email" value="@ViewData["Email"]" class="form-control" required />
             </div>
 
             <div class="form-group">
@@ -30,6 +37,10 @@
         </form>
 
         <div class="auth-links">
+            <p>
+                New donor?
+                <a asp-controller="Account" asp-action="Register">Register</a>
+            </p>
             <p>
                 Are you staff?
                 <a asp-controller="Account" asp-action="StaffLogin">Staff Login</a>

@@ -1,3 +1,4 @@
+@using BloodDonation.Web.Identity
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
@@ -26,25 +27,55 @@
                 How It Works
             </a>
 
-            <a asp-controller="Account" asp-action="Login"
-               class="site-navbar-link @ActiveClass("Account", "Login")">
-                Donor Login
-            </a>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole(Roles.Donor))
+                {
+                    <a asp-controller="Donor" asp-action="Dashboard"
+                       class="site-navbar-link @ActiveClass("Donor", "Dashboard")">
+                        My Dashboard
+                    </a>
+                }
 
-            <a asp-controller="Account" asp-action="StaffLogin"
-               class="site-navbar-link @ActiveClass("Account", "StaffLogin")">
-                Staff Login
-            </a>
+                if (User.IsInRole(Roles.Staff))
+                {
+                    <a asp-controller="Staff" asp-action="Dashboard"
+                       class="site-navbar-link @ActiveClass("Staff", "Dashboard")">
+                        Staff Dashboard
+                    </a>
+                }
 
-            <a asp-controller="Coordinator" asp-action="Dashboard"
-               class="site-navbar-link @ActiveClass("Coordinator", "Dashboard")">
-                Coordinator
-            </a>
+                if (User.IsInRole(Roles.Coordinator))
+                {
+                    <a asp-controller="Coordinator" asp-action="Dashboard"
+                       class="site-navbar-link @ActiveClass("Coordinator", "Dashboard")">
+                        Coordinator
+                    </a>
+                }
 
-            <a asp-controller="Account" asp-action="Register"
-               class="site-navbar-button @ActiveClass("Account", "Register")">
-                Register
-            </a>
+                <form method="post" asp-controller="Account" asp-action="Logout" class="d-inline">
+                    <button type="submit" class="site-navbar-button border-0">
+                        Logout
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Login"
+                   class="site-navbar-link @ActiveClass("Account", "Login")">
+                    Donor Login
+                </a>
+
+                <a asp-controller="Account" asp-action="StaffLogin"
+                   class="site-navbar-link @ActiveClass("Account", "StaffLogin")">
+                    Staff Login
+                </a>
+
+                <a asp-controller="Account" asp-action="Register"
+                   class="site-navbar-button @ActiveClass("Account", "Register")">
+                    Register
+                </a>
+            }
 
         </div>
 

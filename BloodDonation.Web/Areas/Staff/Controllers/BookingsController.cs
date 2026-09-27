@@ -1,3 +1,5 @@
+using BloodDonation.Web.Identity;
+using Microsoft.AspNetCore.Authorization;
 using BloodDonation.Domain.Models;
 using BloodDonation.Web.Areas.Staff.Models;
 using BloodDonation.Web.Data;
@@ -6,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BloodDonation.Web.Areas.Staff.Controllers;
 
 [Area("Staff")]
+[Authorize(Roles = Roles.Staff)]
 public class BookingsController : Controller
 {
     private readonly SampleDataStore _store;
