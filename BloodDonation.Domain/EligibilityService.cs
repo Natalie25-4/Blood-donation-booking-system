@@ -34,7 +34,7 @@ public class EligibilityService
     }
 
     // Stand-down rule (FR5)
-    public bool IsStandDownCleared(StandDownEvent standDownEvent, DateTime bookingDate)
+    public bool IsStandDownCleared(StandDownEvent? standDownEvent, DateTime bookingDate)
     {
         if (standDownEvent == null)
         {
