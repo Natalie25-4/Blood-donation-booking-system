@@ -6,13 +6,7 @@ namespace BloodDonation.Tests;
 [TestClass]
 public class EligibilityServiceTests
 {
-    private EligibilityService _service;
-
-    [TestInitialize]
-    public void Setup()
-    {
-        _service = new EligibilityService();
-    }
+    private readonly EligibilityService _service = new();
 
     #region IsIntervalEligible Tests
 
