@@ -1,3 +1,4 @@
+@using BloodDonation.Domain
 @{ 
     ViewData["Title"] = "Register to Donate"; 
 } 
@@ -47,8 +48,8 @@
       </div> 
       <div class = "form-group"> 
         <label for = "WeightKg">Weight (kg)</label> 
-        <input type ="number" id = "WeightKg" name = "WeightKg" class = "form-control" step = "0.1" min = "50" max = "200" required /> 
-        <small class = "form-text text-muted">You must weigh at least 50 kg to donate blood.</small>
+        <input type ="number" id = "WeightKg" name = "WeightKg" class = "form-control" step = "0.1" min = "@EligibilityRules.MinimumWeightKg" max = "200" required /> 
+        <small class = "form-text text-muted">You must weigh at least @EligibilityRules.MinimumWeightKg kg to donate blood.</small>
         <span id = "WeightKgError" class = "validation-message"></span>
       </div> 
  
@@ -180,12 +181,12 @@
                 age--;
             }
 
-            if (age < 16) {
-                document.getElementById("DateOfBirthError").textContent = "You must be at least 16 years old to donate blood.";
+            if (age < @EligibilityRules.MinimumAge) {
+                document.getElementById("DateOfBirthError").textContent = "You must be at least @EligibilityRules.MinimumAge years old to donate blood.";
                 isValid = false;
             }
-            else if (age >= 71) {
-                document.getElementById("DateOfBirthError").textContent = "First-time donors must be under 71 years old.";
+            else if (age >= @EligibilityRules.NewDonorMaximumAge) {
+                document.getElementById("DateOfBirthError").textContent = "First-time donors must be under @EligibilityRules.NewDonorMaximumAge years old.";
                 isValid = false;
             }
         }
@@ -194,8 +195,8 @@
             document.getElementById("WeightKgError").textContent = "Please enter your weight.";
             isValid = false;
         }
-        else if (Number(weight) < 50) {
-            document.getElementById("WeightKgError").textContent = "You must weigh at least 50 kg to donate blood.";
+        else if (Number(weight) < @EligibilityRules.MinimumWeightKg) {
+            document.getElementById("WeightKgError").textContent = "You must weigh at least @EligibilityRules.MinimumWeightKg kg to donate blood.";
             isValid = false;
         }
         else if (Number(weight) > 200) {
