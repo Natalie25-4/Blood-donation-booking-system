@@ -1,3 +1,4 @@
+using BloodDonation.Domain;
 using BloodDonation.Domain.Models;
 
 namespace BloodDonation.Web.Data;
@@ -18,7 +19,7 @@ public static class SampleDataSeeder
             new Donor { Id = 1, Name = "Alice Nguyen", DateOfBirth = new DateTime(1990, 5, 14), WeightKg = 68, LastDonationDate = today.AddDays(-90), Role = UserRole.Donor },
             new Donor { Id = 2, Name = "Ben Carter", DateOfBirth = new DateTime(1985, 11, 2), WeightKg = 82, LastDonationDate = null, Role = UserRole.Donor },
             new Donor { Id = 3, Name = "Chloe Davies", DateOfBirth = new DateTime(1972, 3, 22), WeightKg = 61, LastDonationDate = today.AddDays(-200), Role = UserRole.Donor },
-            new Donor { Id = 4, Name = "Daniel Osei", DateOfBirth = new DateTime(2001, 7, 9), WeightKg = 75, LastDonationDate = today.AddDays(-84), Role = UserRole.Donor },
+            new Donor { Id = 4, Name = "Daniel Osei", DateOfBirth = new DateTime(2001, 7, 9), WeightKg = 75, LastDonationDate = today.AddDays(-EligibilityRules.MinimumDonationIntervalDays), Role = UserRole.Donor }, // exactly on the interval boundary
             new Donor { Id = 5, Name = "Emma Wallace", DateOfBirth = new DateTime(1965, 1, 30), WeightKg = 58, LastDonationDate = null, Role = UserRole.Donor },
             new Donor { Id = 6, Name = "Farid Khan", DateOfBirth = new DateTime(1998, 9, 17), WeightKg = 90, LastDonationDate = today.AddDays(-45), Role = UserRole.Donor },
             new Donor { Id = 7, Name = "Grace Liu", DateOfBirth = new DateTime(1955, 6, 11), WeightKg = 65, LastDonationDate = today.AddDays(-400), Role = UserRole.Donor },

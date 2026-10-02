@@ -93,18 +93,20 @@ public class BookingController : Controller
     {
         if (!_eligibilityService.IsAgeEligible(model.DateOfBirth, bookingDate, isNewDonor))
         {
-            var age = CalculateAge(model.DateOfBirth, bookingDate);
-            return age < 16
+            var age = _eligibilityService.CalculateAge(model.DateOfBirth, bookingDate);
+            return age < EligibilityRules.MinimumAge
                 ? new BookingIneligibleModel
                 {
                     FailedRule = "Age",
-                    Message = "Donors must be at least 16 years old.",
-                    EarliestEligibleDate = model.DateOfBirth.AddYears(16)
+                    Message = $"Donors must be at least {EligibilityRules.MinimumAge} years old.",
+                    EarliestEligibleDate = _eligibilityService.MinimumAgeDate(model.DateOfBirth)
                 }
                 : new BookingIneligibleModel
                 {
                     FailedRule = "Age",
-                    Message = "New donors must be 71 or younger.",
+                    Message = isNewDonor
+                        ? $"New donors must be {EligibilityRules.NewDonorMaximumAge} or younger."
+                        : $"Returning donors can donate until they turn {EligibilityRules.ReturningDonorAgeLimit}.",
                     EarliestEligibleDate = null
                 };
         }
@@ -114,37 +116,30 @@ public class BookingController : Controller
             return new BookingIneligibleModel
             {
                 FailedRule = "Weight",
-                Message = "Minimum weight for donation is 50kg."
+                Message = $"Minimum weight for donation is {EligibilityRules.MinimumWeightKg}kg."
             };
         }
 
-        if (!isNewDonor && !_eligibilityService.IsIntervalEligible(model.LastDonationDate!.Value, bookingDate))
+        if (!_eligibilityService.IsIntervalEligible(model.LastDonationDate, bookingDate))
         {
             return new BookingIneligibleModel
             {
                 FailedRule = "Interval",
-                Message = "At least 84 days must pass between donations.",
-                EarliestEligibleDate = model.LastDonationDate.Value.AddDays(84)
+                Message = $"At least {EligibilityRules.MinimumDonationIntervalDays} days must pass between donations.",
+                EarliestEligibleDate = _eligibilityService.EarliestDonationDate(model.LastDonationDate!.Value)
             };
         }
 
-        if (!_eligibilityService.IsStandDownCleared(standDownEvent!, bookingDate))
+        if (!_eligibilityService.IsStandDownCleared(standDownEvent, bookingDate))
         {
             return new BookingIneligibleModel
             {
                 FailedRule = "Stand-down",
                 Message = $"Stand-down period for {standDownEvent!.Reason} has not elapsed.",
-                EarliestEligibleDate = standDownEvent.EventDate.AddDays(standDownEvent.DurationDays)
+                EarliestEligibleDate = _eligibilityService.StandDownEndDate(standDownEvent)
             };
         }
 
         return null;
-    }
-
-    private static int CalculateAge(DateTime dateOfBirth, DateTime onDate)
-    {
-        var age = onDate.Year - dateOfBirth.Year;
-        if (dateOfBirth.Date > onDate.AddYears(-age)) age--;
-        return age;
     }
 }

@@ -52,6 +52,35 @@ public class EligibilityServiceTests
         Assert.IsTrue(result, "85 days should be eligible (above 84-day minimum)");
     }
 
+    // TC09: a first-time donor has no previous donation, so the interval rule is skipped.
+    [TestMethod]
+    public void TC09_IsIntervalEligible_NoPreviousDonation_ReturnsTrue()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+
+        // Act
+        var result = _service.IsIntervalEligible(null, bookingDate);
+
+        // Assert
+        Assert.IsTrue(result, "A first-time donor should pass the interval rule");
+    }
+
+    [TestMethod]
+    public void EarliestDonationDate_Is84DaysAfterLastDonation_AndIsTheFirstEligibleDay()
+    {
+        // Arrange
+        var lastDonationDate = new DateTime(2024, 1, 1);
+
+        // Act
+        var earliest = _service.EarliestDonationDate(lastDonationDate);
+
+        // Assert
+        Assert.AreEqual(new DateTime(2024, 3, 25), earliest);
+        Assert.IsTrue(_service.IsIntervalEligible(lastDonationDate, earliest), "The earliest date should be eligible");
+        Assert.IsFalse(_service.IsIntervalEligible(lastDonationDate, earliest.AddDays(-1)), "The day before should not be");
+    }
+
     #endregion
 
     #region IsAgeEligible Tests - New Donors
@@ -183,7 +212,7 @@ public class EligibilityServiceTests
         var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
 
         // Assert
-        Assert.IsTrue(result, "Age 71 should be eligible for existing donors (no upper age limit)");
+        Assert.IsTrue(result, "Age 71 should be eligible for existing donors (below the 81st birthday)");
     }
 
     [TestMethod]
@@ -197,11 +226,11 @@ public class EligibilityServiceTests
         var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
 
         // Assert
-        Assert.IsTrue(result, "Age 72 should be eligible for existing donors (no upper age limit)");
+        Assert.IsTrue(result, "Age 72 should be eligible for existing donors (below the 81st birthday)");
     }
 
     [TestMethod]
-    public void IsAgeEligible_ExistingDonor_Age100_ReturnsTrue()
+    public void IsAgeEligible_ExistingDonor_Age100_ReturnsFalse()
     {
         // Arrange
         var bookingDate = new DateTime(2024, 6, 15);
@@ -211,7 +240,74 @@ public class EligibilityServiceTests
         var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
 
         // Assert
-        Assert.IsTrue(result, "Age 100 should be eligible for existing donors (no upper age limit)");
+        Assert.IsFalse(result, "Age 100 should be ineligible for existing donors (after the 81st birthday)");
+    }
+
+    [TestMethod]
+    public void IsAgeEligible_ExistingDonor_Age80_ReturnsTrue()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+        var dateOfBirth = new DateTime(1944, 6, 15); // Exactly 80
+
+        // Act
+        var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
+
+        // Assert
+        Assert.IsTrue(result, "Age 80 should be eligible for existing donors (below the 81st birthday)");
+    }
+
+    [TestMethod]
+    public void IsAgeEligible_ExistingDonor_DayBefore81stBirthday_ReturnsTrue()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+        var dateOfBirth = new DateTime(1943, 6, 16); // Turns 81 the day after the booking
+
+        // Act
+        var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
+
+        // Assert
+        Assert.IsTrue(result, "The day before their 81st birthday, existing donors should still be eligible");
+    }
+
+    // TC07b: NZBS accepts returning donors up to their 81st birthday.
+    [TestMethod]
+    public void TC07b_IsAgeEligible_ExistingDonor_Age81_ReturnsFalse()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+        var dateOfBirth = new DateTime(1943, 6, 15); // Exactly 81 on booking date
+
+        // Act
+        var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
+
+        // Assert
+        Assert.IsFalse(result, "Age 81 should be ineligible for existing donors (on or after the 81st birthday)");
+    }
+
+    [TestMethod]
+    public void CalculateAge_DayBeforeBirthday_ReturnsPreviousAge()
+    {
+        var dateOfBirth = new DateTime(2008, 6, 15);
+
+        Assert.AreEqual(15, _service.CalculateAge(dateOfBirth, new DateTime(2024, 6, 14)));
+        Assert.AreEqual(16, _service.CalculateAge(dateOfBirth, new DateTime(2024, 6, 15)));
+    }
+
+    [TestMethod]
+    public void MinimumAgeDate_Is16thBirthday_AndIsTheFirstEligibleDay()
+    {
+        // Arrange
+        var dateOfBirth = new DateTime(2008, 6, 15);
+
+        // Act
+        var earliest = _service.MinimumAgeDate(dateOfBirth);
+
+        // Assert
+        Assert.AreEqual(new DateTime(2024, 6, 15), earliest);
+        Assert.IsTrue(_service.IsAgeEligible(dateOfBirth, earliest, isNewDonor: true), "The 16th birthday should be eligible");
+        Assert.IsFalse(_service.IsAgeEligible(dateOfBirth, earliest.AddDays(-1), isNewDonor: true), "The day before should not be");
     }
 
     #endregion
@@ -378,6 +474,25 @@ public class EligibilityServiceTests
 
         // Assert
         Assert.IsFalse(result, "Booking during stand-down period should be ineligible");
+    }
+
+    [TestMethod]
+    public void StandDownEndDate_IsEventDatePlusDuration_AndIsTheFirstEligibleDay()
+    {
+        // Arrange
+        var standDownEvent = new StandDownEvent
+        {
+            EventDate = new DateTime(2024, 1, 1),
+            DurationDays = 14
+        };
+
+        // Act
+        var end = _service.StandDownEndDate(standDownEvent);
+
+        // Assert
+        Assert.AreEqual(new DateTime(2024, 1, 15), end);
+        Assert.IsTrue(_service.IsStandDownCleared(standDownEvent, end), "The end date should be eligible");
+        Assert.IsFalse(_service.IsStandDownCleared(standDownEvent, end.AddDays(-1)), "The day before should not be");
     }
 
     #endregion
