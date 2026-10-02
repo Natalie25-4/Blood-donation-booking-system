@@ -3,6 +3,7 @@ namespace BloodDonation.Web.Models
     public class Booking
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string? DonorUserId { get; set; } // Identity user who made the booking
         public string DonorName { get; set; } = string.Empty;
         public string DonorEmail { get; set; } = string.Empty;
         public string SessionId { get; set; } = string.Empty;

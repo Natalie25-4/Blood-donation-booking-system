@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Mvc.Testing;
 namespace BloodDonation.Tests.Integration;
 
 // D3 (#3), NFR3, FR5: a donor can only see, cancel or reschedule their own booking.
-// Each test registers two fresh donors through the real register form, so tests running in parallel never share a donor.
+// Each test registers its own donors through the real register form, so tests never share a donor.
+// Not parallelised: these tests add and remove bookings in the static InMemoryStore, whose lists are not thread-safe.
 [TestClass]
+[DoNotParallelize]
 public class BookingOwnershipTests
 {
     private const string Password = "Owner#Test1";
