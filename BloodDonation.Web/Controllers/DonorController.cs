@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BloodDonation.Web.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,19 +10,17 @@ namespace BloodDonation.Web.Controllers
     [Authorize(Roles = Roles.Donor)]
     public class DonorController : Controller
     {
+        private string? CurrentUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         [HttpGet]
         public IActionResult Dashboard()
         {
-            var bookingId = HttpContext.Session.GetString("MyBookingId");
-            Booking? booking = null;
+            // Only the signed-in donor's own booking (D3 / NFR3).
+            var booking = InMemoryStore.Bookings.LastOrDefault(b => b.DonorUserId == CurrentUserId);
             DonationSession? session = null;
 
-            if (!string.IsNullOrEmpty(bookingId))
-            {
-                booking = InMemoryStore.Bookings.FirstOrDefault(b => b.Id == bookingId);
-                if (booking != null)
-                    session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == booking.SessionId);
-            }
+            if (booking != null)
+                session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == booking.SessionId);
 
             ViewBag.Booking = booking;
             ViewBag.Session = session;
@@ -47,6 +46,7 @@ namespace BloodDonation.Web.Controllers
 
             var booking = new Booking
             {
+                DonorUserId = CurrentUserId,
                 DonorName = DonorName,
                 DonorEmail = DonorEmail,
                 SessionId = SessionId,
@@ -56,8 +56,6 @@ namespace BloodDonation.Web.Controllers
 
             InMemoryStore.Bookings.Add(booking);
             session.BookedCount++;
-
-            HttpContext.Session.SetString("MyBookingId", booking.Id);
 
             TempData["Message"] = $"Your appointment on {session.SessionDate:dddd d MMM yyyy} at {session.Location} is confirmed.";
             return RedirectToAction("Dashboard");
@@ -69,12 +67,10 @@ namespace BloodDonation.Web.Controllers
             var booking = InMemoryStore.Bookings.FirstOrDefault(b => b.Id == BookingId);
             if (booking != null)
             {
-                var session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == booking.SessionId);
-                if (session != null) session.BookedCount--;
+                if (booking.DonorUserId != CurrentUserId)
+                    return Forbid();
 
-                InMemoryStore.Bookings.Remove(booking);
-                HttpContext.Session.Remove("MyBookingId");
-
+                RemoveBooking(booking);
                 TempData["Message"] = "Your appointment has been cancelled.";
             }
 
@@ -84,9 +80,26 @@ namespace BloodDonation.Web.Controllers
         [HttpPost]
         public IActionResult Reschedule(string BookingId)
         {
-            Cancel(BookingId);
+            var booking = InMemoryStore.Bookings.FirstOrDefault(b => b.Id == BookingId);
+            if (booking != null)
+            {
+                if (booking.DonorUserId != CurrentUserId)
+                    return Forbid();
+
+                RemoveBooking(booking);
+            }
+
             TempData["Message"] = "Your appointment was cancelled — choose a new session below.";
             return RedirectToAction("Book");
+        }
+
+        // Releases the slot and removes the booking.
+        private static void RemoveBooking(Booking booking)
+        {
+            var session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == booking.SessionId);
+            if (session != null) session.BookedCount--;
+
+            InMemoryStore.Bookings.Remove(booking);
         }
     }
 }
