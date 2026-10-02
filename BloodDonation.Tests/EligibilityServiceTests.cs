@@ -214,6 +214,49 @@ public class EligibilityServiceTests
         Assert.IsTrue(result, "Age 100 should be eligible for existing donors (no upper age limit)");
     }
 
+    [TestMethod]
+    public void IsAgeEligible_ExistingDonor_Age80_ReturnsTrue()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+        var dateOfBirth = new DateTime(1944, 6, 15); // Exactly 80
+
+        // Act
+        var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
+
+        // Assert
+        Assert.IsTrue(result, "Age 80 should be eligible for existing donors (below the 81st birthday)");
+    }
+
+    [TestMethod]
+    public void IsAgeEligible_ExistingDonor_DayBefore81stBirthday_ReturnsTrue()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+        var dateOfBirth = new DateTime(1943, 6, 16); // Turns 81 the day after the booking
+
+        // Act
+        var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
+
+        // Assert
+        Assert.IsTrue(result, "The day before their 81st birthday, existing donors should still be eligible");
+    }
+
+    // TC07b: NZBS accepts returning donors up to their 81st birthday.
+    [TestMethod]
+    public void TC07b_IsAgeEligible_ExistingDonor_Age81_ReturnsFalse()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+        var dateOfBirth = new DateTime(1943, 6, 15); // Exactly 81 on booking date
+
+        // Act
+        var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
+
+        // Assert
+        Assert.IsFalse(result, "Age 81 should be ineligible for existing donors (on or after the 81st birthday)");
+    }
+
     #endregion
 
     #region IsWeightEligible Tests
