@@ -4,6 +4,9 @@ namespace BloodDonation.Domain;
 
 public class EligibilityService
 {
+    // NZBS: returning donors can donate up to their 81st birthday.
+    public const int ReturningDonorAgeLimit = 81;
+
     // Returns false if fewer than 84 days have passed between lastDonationDate and bookingDate
     public bool IsIntervalEligible(DateTime lastDonationDate, DateTime bookingDate)
     {
@@ -11,7 +14,7 @@ public class EligibilityService
         return interval.TotalDays >= 84;
     }
 
-    // 16-71 rule (FR3)
+    // New donors 16-71; returning donors from 16 until their 81st birthday (FR3)
     public bool IsAgeEligible(DateTime dateOfBirth, DateTime bookingDate, bool isNewDonor)
     {
         var age = bookingDate.Year - dateOfBirth.Year;
@@ -23,7 +26,7 @@ public class EligibilityService
         }
         else
         {
-            return age >= 16;
+            return age >= 16 && age < ReturningDonorAgeLimit;
         }
     }
 

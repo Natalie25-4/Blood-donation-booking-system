@@ -104,7 +104,9 @@ public class BookingController : Controller
                 : new BookingIneligibleModel
                 {
                     FailedRule = "Age",
-                    Message = "New donors must be 71 or younger.",
+                    Message = isNewDonor
+                        ? "New donors must be 71 or younger."
+                        : "Returning donors can donate up to their 81st birthday.",
                     EarliestEligibleDate = null
                 };
         }

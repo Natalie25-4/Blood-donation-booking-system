@@ -183,7 +183,7 @@ public class EligibilityServiceTests
         var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
 
         // Assert
-        Assert.IsTrue(result, "Age 71 should be eligible for existing donors (no upper age limit)");
+        Assert.IsTrue(result, "Age 71 should be eligible for existing donors (below the 81st birthday)");
     }
 
     [TestMethod]
@@ -197,11 +197,11 @@ public class EligibilityServiceTests
         var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
 
         // Assert
-        Assert.IsTrue(result, "Age 72 should be eligible for existing donors (no upper age limit)");
+        Assert.IsTrue(result, "Age 72 should be eligible for existing donors (below the 81st birthday)");
     }
 
     [TestMethod]
-    public void IsAgeEligible_ExistingDonor_Age100_ReturnsTrue()
+    public void IsAgeEligible_ExistingDonor_Age100_ReturnsFalse()
     {
         // Arrange
         var bookingDate = new DateTime(2024, 6, 15);
@@ -211,7 +211,7 @@ public class EligibilityServiceTests
         var result = _service.IsAgeEligible(dateOfBirth, bookingDate, isNewDonor: false);
 
         // Assert
-        Assert.IsTrue(result, "Age 100 should be eligible for existing donors (no upper age limit)");
+        Assert.IsFalse(result, "Age 100 should be ineligible for existing donors (after the 81st birthday)");
     }
 
     [TestMethod]
