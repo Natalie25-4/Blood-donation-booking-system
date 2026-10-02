@@ -52,6 +52,35 @@ public class EligibilityServiceTests
         Assert.IsTrue(result, "85 days should be eligible (above 84-day minimum)");
     }
 
+    // TC09: a first-time donor has no previous donation, so the interval rule is skipped.
+    [TestMethod]
+    public void TC09_IsIntervalEligible_NoPreviousDonation_ReturnsTrue()
+    {
+        // Arrange
+        var bookingDate = new DateTime(2024, 6, 15);
+
+        // Act
+        var result = _service.IsIntervalEligible(null, bookingDate);
+
+        // Assert
+        Assert.IsTrue(result, "A first-time donor should pass the interval rule");
+    }
+
+    [TestMethod]
+    public void EarliestDonationDate_Is84DaysAfterLastDonation_AndIsTheFirstEligibleDay()
+    {
+        // Arrange
+        var lastDonationDate = new DateTime(2024, 1, 1);
+
+        // Act
+        var earliest = _service.EarliestDonationDate(lastDonationDate);
+
+        // Assert
+        Assert.AreEqual(new DateTime(2024, 3, 25), earliest);
+        Assert.IsTrue(_service.IsIntervalEligible(lastDonationDate, earliest), "The earliest date should be eligible");
+        Assert.IsFalse(_service.IsIntervalEligible(lastDonationDate, earliest.AddDays(-1)), "The day before should not be");
+    }
+
     #endregion
 
     #region IsAgeEligible Tests - New Donors
@@ -257,6 +286,30 @@ public class EligibilityServiceTests
         Assert.IsFalse(result, "Age 81 should be ineligible for existing donors (on or after the 81st birthday)");
     }
 
+    [TestMethod]
+    public void CalculateAge_DayBeforeBirthday_ReturnsPreviousAge()
+    {
+        var dateOfBirth = new DateTime(2008, 6, 15);
+
+        Assert.AreEqual(15, _service.CalculateAge(dateOfBirth, new DateTime(2024, 6, 14)));
+        Assert.AreEqual(16, _service.CalculateAge(dateOfBirth, new DateTime(2024, 6, 15)));
+    }
+
+    [TestMethod]
+    public void MinimumAgeDate_Is16thBirthday_AndIsTheFirstEligibleDay()
+    {
+        // Arrange
+        var dateOfBirth = new DateTime(2008, 6, 15);
+
+        // Act
+        var earliest = _service.MinimumAgeDate(dateOfBirth);
+
+        // Assert
+        Assert.AreEqual(new DateTime(2024, 6, 15), earliest);
+        Assert.IsTrue(_service.IsAgeEligible(dateOfBirth, earliest, isNewDonor: true), "The 16th birthday should be eligible");
+        Assert.IsFalse(_service.IsAgeEligible(dateOfBirth, earliest.AddDays(-1), isNewDonor: true), "The day before should not be");
+    }
+
     #endregion
 
     #region IsWeightEligible Tests
@@ -421,6 +474,25 @@ public class EligibilityServiceTests
 
         // Assert
         Assert.IsFalse(result, "Booking during stand-down period should be ineligible");
+    }
+
+    [TestMethod]
+    public void StandDownEndDate_IsEventDatePlusDuration_AndIsTheFirstEligibleDay()
+    {
+        // Arrange
+        var standDownEvent = new StandDownEvent
+        {
+            EventDate = new DateTime(2024, 1, 1),
+            DurationDays = 14
+        };
+
+        // Act
+        var end = _service.StandDownEndDate(standDownEvent);
+
+        // Assert
+        Assert.AreEqual(new DateTime(2024, 1, 15), end);
+        Assert.IsTrue(_service.IsStandDownCleared(standDownEvent, end), "The end date should be eligible");
+        Assert.IsFalse(_service.IsStandDownCleared(standDownEvent, end.AddDays(-1)), "The day before should not be");
     }
 
     #endregion
