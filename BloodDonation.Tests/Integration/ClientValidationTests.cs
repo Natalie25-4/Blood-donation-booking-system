@@ -51,20 +51,47 @@ public class ClientValidationTests
         AssertClientValidationLoaded(html);
     }
 
-    // TC18: The staff bookings page contains the Record Outcome form,
-    // so it should load the client-side validation scripts and metadata.
+    // TC18: The staff record outcome page should load
+    // the client-side validation scripts and metadata.
     [TestMethod]
     public async Task TC18_StaffRecordOutcome_LoadsClientValidation()
     {
         // Sign in as a staff user.
         var client = await StaffClientAsync();
 
-        // RecordOutcome is submitted from the Bookings page.
-        // There is no separate RecordOutcome GET page.
-        var response = await client.GetAsync("/Staff/Bookings");
+        // Load the staff bookings page first so an existing
+        // appointment id can be found.
+        var bookingsResponse = await client.GetAsync("/Staff/Bookings");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            bookingsResponse.StatusCode);
 
+        var bookingsHtml =
+            await bookingsResponse.Content.ReadAsStringAsync();
+
+        // Get the first appointment id from a SetOutcome link.
+        var match = Regex.Match(
+            bookingsHtml,
+            @"/Staff/Bookings/SetOutcome/(\d+)",
+            RegexOptions.IgnoreCase);
+
+        Assert.IsTrue(
+            match.Success,
+            "No appointment was available for the Record Outcome form.");
+
+        var appointmentId = match.Groups[1].Value;
+
+        // Load the actual Record Outcome form.
+        var response = await client.GetAsync(
+            $"/Staff/Bookings/SetOutcome/{appointmentId}");
+
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            response.StatusCode);
+
+        // Read the rendered HTML so the validation scripts and
+        // validation metadata can be checked.
         var html = await response.Content.ReadAsStringAsync();
 
         AssertClientValidationLoaded(html);
@@ -81,8 +108,12 @@ public class ClientValidationTests
         // Load the staff sessions page.
         var response = await client.GetAsync("/Staff/Sessions");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            response.StatusCode);
 
+        // Read the rendered HTML so the validation scripts and
+        // validation metadata can be checked.
         var html = await response.Content.ReadAsStringAsync();
 
         AssertClientValidationLoaded(html);
@@ -99,8 +130,12 @@ public class ClientValidationTests
         // Load the registration page.
         var response = await client.GetAsync("/Account/Register");
 
-        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        Assert.AreEqual(
+            HttpStatusCode.OK,
+            response.StatusCode);
 
+        // Read the rendered HTML so the validation scripts and
+        // validation metadata can be checked.
         var html = await response.Content.ReadAsStringAsync();
 
         AssertClientValidationLoaded(html);

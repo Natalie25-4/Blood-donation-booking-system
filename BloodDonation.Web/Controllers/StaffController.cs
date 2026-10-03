@@ -2,6 +2,7 @@ using BloodDonation.Web.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using BloodDonation.Web.Data;
+using BloodDonation.Web.Models;
 
 namespace BloodDonation.Web.Controllers
 {
@@ -87,20 +88,34 @@ namespace BloodDonation.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Sessions(DateTime SessionDate, string Time, string Location, int Capacity)
+        public IActionResult Sessions(SessionViewModel model)
+       {
+         // Reject the form when required fields fail server-side validation.
+         if (!ModelState.IsValid)
         {
-            InMemoryStore.Sessions.Add(new Models.DonationSession
-            {
-                Id = "S" + (InMemoryStore.Sessions.Count + 1),
-                SessionDate = SessionDate,
-                Time = Time,
-                Location = Location,
-                Capacity = Capacity,
-                BookedCount = 0
-            });
+        // Rebuild the session list so it is still available
+        // when the form is returned with validation errors.
+        ViewBag.Sessions = InMemoryStore.Sessions
+            .OrderBy(s => s.SessionDate)
+            .ToList();
 
-            TempData["Message"] = "New session added.";
-            return RedirectToAction("Sessions");
+        return View(model);
+    }
+
+    // Add the new session after validation has passed.
+    InMemoryStore.Sessions.Add(new DonationSession
+    {
+        Id = "S" + (InMemoryStore.Sessions.Count + 1),
+        SessionDate = model.SessionDate,
+        Time = model.Time,
+        Location = model.Location,
+        Capacity = model.Capacity,
+        BookedCount = 0
+    });
+
+    TempData["Message"] = "New session added.";
+
+    return RedirectToAction("Sessions");
         }
     }
 }

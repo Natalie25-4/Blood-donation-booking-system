@@ -35,9 +35,20 @@ namespace BloodDonation.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult Book(string SessionId, string DonorName, string DonorEmail, string BloodType, string? Notes)
+        public IActionResult Book(BookingViewModel model)
         {
-            var session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == SessionId);
+            // Reject the form when required fields fail server-side validation.
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Sessions = InMemoryStore.Sessions
+                    .OrderBy(s => s.SessionDate)
+                    .ToList();
+
+                return View(model);
+            }
+
+            var session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == model.SessionId);
+
             if (session == null || session.SpotsLeft <= 0)
             {
                 TempData["Error"] = "That session is no longer available. Please choose another.";
@@ -47,17 +58,22 @@ namespace BloodDonation.Web.Controllers
             var booking = new Booking
             {
                 DonorUserId = CurrentUserId,
-                DonorName = DonorName,
-                DonorEmail = DonorEmail,
-                SessionId = SessionId,
-                BloodType = BloodType,
-                Notes = Notes
+                DonorName = model.DonorName,
+                DonorEmail = model.DonorEmail,
+                SessionId = model.SessionId,
+
+                // Blood type is optional, so store an empty string when none is supplied.
+                BloodType = model.BloodType ?? "",
+
+                Notes = model.Notes
             };
 
             InMemoryStore.Bookings.Add(booking);
             session.BookedCount++;
 
-            TempData["Message"] = $"Your appointment on {session.SessionDate:dddd d MMM yyyy} at {session.Location} is confirmed.";
+            TempData["Message"] =
+                $"Your appointment on {session.SessionDate:dddd d MMM yyyy} at {session.Location} is confirmed.";
+
             return RedirectToAction("Dashboard");
         }
 

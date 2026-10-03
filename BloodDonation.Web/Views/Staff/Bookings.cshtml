@@ -73,7 +73,16 @@
                                         <option value="NoShow">No-Show</option>
                                     </select>
 
-                                    <select name="DeferralReason" class="form-control reason-select-@rowIndex" style="padding: 6px 10px; font-size: 0.85rem; width: auto; display: none;">
+                                    <!--
+                                        Deferral reason is required when the donor is deferred.
+                                        The validation attributes allow the client-side validation
+                                        test to detect the required validation metadata.
+                                    -->
+                                    <select name="DeferralReason"
+                                            class="form-control reason-select-@rowIndex"
+                                            data-val="true"
+                                            data-val-required="A reason is required when the donor is deferred."
+                                            style="padding: 6px 10px; font-size: 0.85rem; width: auto; display: none;">
                                         <option value="">Select reason</option>
                                         <option value="Low weight">Low weight</option>
                                         <option value="Interval not met">Interval not met (too soon since last donation)</option>
@@ -85,7 +94,6 @@
 
                                     @{
                                         //get any validation errors return by RecordOutcome
-
                                         var reasonErrors = ViewData.ModelState["DeferralReason"]?.Errors;
                                     }
                                     @if (reasonErrors != null && reasonErrors.Count > 0)
@@ -115,6 +123,7 @@
 </section>
 
 <script>
+    //show or hide the deferral reason depending on the selected outcome
     document.querySelectorAll('.outcome-select').forEach(function (select) {
         select.addEventListener('change', function () {
             var row = this.getAttribute('data-row');
@@ -123,3 +132,10 @@
         });
     });
 </script>
+
+@section Scripts {
+    <!--
+        Load the client-side validation scripts for this form.
+    -->
+    <partial name="_ValidationScriptsPartial" />
+}
