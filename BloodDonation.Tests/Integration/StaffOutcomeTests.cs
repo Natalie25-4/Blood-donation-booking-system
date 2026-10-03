@@ -31,15 +31,15 @@ public class StaffOutcomeTests
     [TestMethod]
     public async Task TC11_DeferredWithoutReason_IsRejected()
     {
-        // 1. Setup donor & booking
+        // create a registered donor and booking for test
         var (_, bookingId) = await DonorWithBookingAsync();
+        // sign in as stafff so the protected staff endpoint can be accessed
         var staffClient = await StaffClientAsync();
-
-        // 2. Fetch the staff bookings page containing the outcome form
+        //fetch bookings page to get the anti-forgery token and form data
         var bookingsUrl = "/Staff/Bookings";
         var formPageHtml = await staffClient.GetStringAsync(bookingsUrl);
 
-        // 3. POST empty deferral reason
+        // submit deferral without a reason
         var emptyReasonResponse = await PostWithTokenFromPageAsync(
             staffClient,
             formPageHtml,
@@ -53,11 +53,12 @@ public class StaffOutcomeTests
 
         var emptyResponseBody = await emptyReasonResponse.Content.ReadAsStringAsync();
 
+        //form should be redisplayed with validation error message
         StringAssert.Contains(
             emptyResponseBody,
             "A reason is required when the donor is deferred.");
 
-        // Booking must not have been changed.
+        // Booking must not have been changed if reason is missing
         Assert.IsFalse(
             Regex.IsMatch(
                 emptyResponseBody,
@@ -65,7 +66,7 @@ public class StaffOutcomeTests
                 RegexOptions.IgnoreCase),
             "Booking should not be changed to Deferred when no reason is supplied.");
 
-        // 4. POST whitespace-only deferral reason
+        // submit deferral with whitespace reason only.
         var whitespaceResponse = await PostWithTokenFromPageAsync(
             staffClient,
             emptyResponseBody,
