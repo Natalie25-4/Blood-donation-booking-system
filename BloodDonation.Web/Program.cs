@@ -3,11 +3,12 @@ using BloodDonation.Web.Data;
 using BloodDonation.Web.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 // One in-memory Identity store per app instance, so test hosts do not share users or roles.
 var identityDatabaseName = $"BloodDonationIdentity-{Guid.NewGuid()}";
