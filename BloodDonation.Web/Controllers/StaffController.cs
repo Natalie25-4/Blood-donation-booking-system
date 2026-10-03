@@ -34,24 +34,43 @@ namespace BloodDonation.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult RecordOutcome(string BookingId, string Outcome, string? DeferralReason)
+        public IActionResult RecordOutcome(string bookingId, string outcome, string? deferralReason)
         {
-            var booking = InMemoryStore.Bookings.FirstOrDefault(b => b.Id == BookingId);
+            var booking = InMemoryStore.Bookings.FirstOrDefault(b => b.Id == bookingId);
             if (booking != null)
             {
-                booking.Status = Outcome;
-
-                if (Outcome == "Deferred")
+                //deferral must have a reason so that staff can record why donor is deferred
+                if (outcome == "Deferred" && string.IsNullOrWhiteSpace(deferralReason))
                 {
-                    booking.DeferralReason = string.IsNullOrEmpty(DeferralReason) ? "Not specified" : DeferralReason;
+                    ModelState.AddModelError(
+                        "DeferralReason",
+                        "A reason is required when the donor is deferred.");
+
+                    //rebuild the booking data so forms can display again with validation error
+                    ViewBag.Bookings = InMemoryStore.Bookings.Select(b => new
+                    {
+                        Booking = b,
+                        Session = InMemoryStore.Sessions.FirstOrDefault(s => s.Id == b.SessionId)
+                    })
+                    .ToList();
+                    return View("Bookings");
+                }
+                
+                //update booking after all validation has passed
+                booking.Status = outcome;
+
+                if (outcome == "Deferred")
+                {
+                    //store the given reason without leading whitespace
+                    booking.DeferralReason = deferralReason?.Trim();
                 }
 
-                if (Outcome == "Donated" && !string.IsNullOrEmpty(booking.BloodType)
-                    && InMemoryStore.StockLevels.ContainsKey(booking.BloodType))
+                if (outcome == "Donated" && !string.IsNullOrEmpty(booking.BloodType) && InMemoryStore.StockLevels.ContainsKey(booking.BloodType))
                 {
                     InMemoryStore.StockLevels[booking.BloodType]++;
                 }
             }
+
             return RedirectToAction("Bookings");
         }
 

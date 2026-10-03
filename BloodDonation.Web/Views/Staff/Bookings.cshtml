@@ -1,6 +1,9 @@
 @{
+    //convert the ViewBag collection into a list
     ViewData["Title"] = "Manage Bookings";
-    var bookings = ViewBag.Bookings as System.Collections.Generic.List<dynamic>;
+    var bookings = (ViewBag.Bookings as System.Collections.IEnumerable)?
+        .Cast<dynamic>()
+        .ToList();
 }
 
 <section class="dashboard-header">
@@ -79,6 +82,19 @@
                                         <option value="Health screening">Failed health screening on the day</option>
                                         <option value="Other">Other</option>
                                     </select>
+
+                                    @{
+                                        //get any validation errors return by RecordOutcome
+
+                                        var reasonErrors = ViewData.ModelState["DeferralReason"]?.Errors;
+                                    }
+                                    @if (reasonErrors != null && reasonErrors.Count > 0)
+                                    {
+                                        //display deferral validation message beside the reason field
+                                        <span class="text-danger" style="font-size: 0.8rem;">
+                                            @reasonErrors[0].ErrorMessage
+                                        </span>
+                                    }
 
                                     <button type="submit" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Save</button>
                                 </form>
