@@ -16,7 +16,7 @@
 <section class="dashboard-body">
 
     <div class="stat-cards">
-        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Total Sessions", Value = ViewBag.TodaySessions.ToString(), IconClass = "fa-solid fa-calendar-day" })
+        @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Today's Sessions", Value = ViewBag.TodaySessions.ToString(), IconClass = "fa-solid fa-calendar-day" })
         @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Total Bookings", Value = ViewBag.TotalBookings.ToString(), IconClass = "fa-solid fa-clipboard-list" })
         @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "Deferred Donors", Value = ViewBag.FlaggedCount.ToString(), IconClass = "fa-solid fa-triangle-exclamation" })
         @await Html.PartialAsync("_DashboardStatCard", new DashboardStat { Label = "No-Shows", Value = ViewBag.NoShowCount.ToString(), IconClass = "fa-solid fa-user-xmark" })

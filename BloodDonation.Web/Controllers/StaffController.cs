@@ -11,7 +11,12 @@ namespace BloodDonation.Web.Controllers
         [HttpGet]
         public IActionResult Dashboard()
         {
-            ViewBag.TodaySessions = InMemoryStore.Sessions.Count;
+            // Keep the total session count as the total number of sessions.
+            ViewBag.TotalSessions = InMemoryStore.Sessions.Count;
+
+            // Count only sessions scheduled for today for the dashboard.
+            ViewBag.TodaySessions = SessionStats.CountOn(InMemoryStore.Sessions, DateTime.Today);
+
             ViewBag.TotalBookings = InMemoryStore.Bookings.Count;
             ViewBag.FlaggedCount = InMemoryStore.Bookings.Count(b => b.Status == "Deferred");
             ViewBag.NoShowCount = InMemoryStore.Bookings.Count(b => b.Status == "NoShow");
@@ -55,7 +60,7 @@ namespace BloodDonation.Web.Controllers
                     .ToList();
                     return View("Bookings");
                 }
-                
+
                 //update booking after all validation has passed
                 booking.Status = outcome;
 
@@ -65,9 +70,9 @@ namespace BloodDonation.Web.Controllers
                     booking.DeferralReason = deferralReason?.Trim();
                 }
 
-                if (outcome == "Donated" && !string.IsNullOrEmpty(booking.BloodType) && InMemoryStore.StockLevels.ContainsKey(booking.BloodType))
+                if (outcome == "Donated" && !string.IsNullOrEmpty(booking.BloodType) && InMemoryStore.StockLevels.TryGetValue(booking.BloodType, out var currentStock))
                 {
-                    InMemoryStore.StockLevels[booking.BloodType]++;
+                    InMemoryStore.StockLevels[booking.BloodType] = currentStock + 1;
                 }
             }
 
