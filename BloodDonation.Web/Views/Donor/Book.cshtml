@@ -1,17 +1,23 @@
 @using BloodDonation.Web.Models
+@model BloodDonation.Web.Models.BookingViewModel
+
 @{
     ViewData["Title"] = "Book an Appointment";
+
+    // Get the available donation sessions supplied by the controller.
     var sessions = ViewBag.Sessions as List<DonationSession>;
 }
 
 <section class="auth-section">
     <div class="auth-card" style="max-width: 640px;">
+
         <h1>Book an Appointment</h1>
 
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-error">@TempData["Error"]</div>
         }
+
         @if (TempData["Message"] != null)
         {
             <div class="alert alert-info">@TempData["Message"]</div>
@@ -21,16 +27,35 @@
             Choose an available session below. You'll be asked to confirm your eligibility before your appointment.
         </p>
 
+        <!--
+            Booking form.
+            The asp-controller and asp-action tag helpers submit the form
+            to the DonorController Book POST action.
+        -->
         <form method="post" asp-controller="Donor" asp-action="Book">
 
             <h2>Your Details</h2>
+
             <div class="form-group">
-                <label for="DonorName">Full Name</label>
-                <input type="text" id="DonorName" name="DonorName" class="form-control" required />
+                <!--
+                    asp-for connects this input to BookingViewModel.DonorName.
+                    This allows ASP.NET Core to generate the client-side
+                    validation metadata required by jQuery validation.
+                -->
+                <label asp-for="DonorName">Full Name</label>
+                <input asp-for="DonorName" class="form-control" />
+
+                <!-- Displays the validation message for the donor name. -->
+                <span asp-validation-for="DonorName" class="validation-message"></span>
             </div>
+
             <div class="form-group">
-                <label for="DonorEmail">Email</label>
-                <input type="email" id="DonorEmail" name="DonorEmail" class="form-control" required />
+                <!-- Email validation is provided by the BookingViewModel. -->
+                <label asp-for="DonorEmail">Email</label>
+                <input asp-for="DonorEmail" type="email" class="form-control" />
+
+                <!-- Displays required/email validation messages. -->
+                <span asp-validation-for="DonorEmail" class="validation-message"></span>
             </div>
 
             <h2>Available Sessions</h2>
@@ -39,30 +64,57 @@
             {
                 @foreach (var session in sessions)
                 {
-                    <div class="form-check" style="align-items: flex-start; @(session.SpotsLeft <= 0 ? "opacity: 0.5;" : "")">
+                    <div class="form-check"
+                         style="align-items: flex-start; @(session.SpotsLeft <= 0 ? "opacity: 0.5;" : "")">
+
+                        <!--
+                            Each available session uses the same SessionId
+                            property so the selected session is submitted
+                            back to the BookingViewModel.
+                        -->
                         <input type="radio"
                                id="session-@session.Id"
-                               name="SessionId"
+                               asp-for="SessionId"
                                value="@session.Id"
                                class="form-check-input"
                                style="margin-top: 4px;"
-                               @(session.SpotsLeft <= 0 ? "disabled" : "")
-                               required />
+                               disabled="@(session.SpotsLeft <= 0)" />
+
                         <label for="session-@session.Id" class="form-check-label">
-                            <strong>@session.SessionDate.ToString("dddd d MMM yyyy")</strong> &middot; @session.Time<br />
+                            <strong>
+                                @session.SessionDate.ToString("dddd d MMM yyyy")
+                            </strong>
+                            &middot;
+                            @session.Time
+                            <br />
+
                             <span style="color: var(--muted); font-size: 0.85rem;">
                                 @session.Location &mdash;
-                                @(session.SpotsLeft <= 0 ? "Fully booked" : $"{session.SpotsLeft} spots left")
+                                @(session.SpotsLeft <= 0
+                                    ? "Fully booked"
+                                    : $"{session.SpotsLeft} spots left")
                             </span>
                         </label>
                     </div>
                 }
             }
 
+            <!--
+                SessionId is required by BookingViewModel, so this displays
+                the client-side validation message if no session is selected.
+            -->
+            <span asp-validation-for="SessionId" class="validation-message"></span>
+
             <h2>Donation Details</h2>
+
             <div class="form-group">
-                <label for="BloodType">Blood Type (if known)</label>
-                <select id="BloodType" name="BloodType" class="form-control">
+                <label asp-for="BloodType">Blood Type (if known)</label>
+
+                <!--
+                    Blood type is optional, so no Required validation is
+                    applied to this field.
+                -->
+                <select asp-for="BloodType" class="form-control">
                     <option value="">Prefer not to say / Unknown</option>
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
@@ -76,11 +128,27 @@
             </div>
 
             <div class="form-group">
-                <label for="Notes">Notes for staff (optional)</label>
-                <textarea id="Notes" name="Notes" class="form-control" rows="3"></textarea>
+                <label asp-for="Notes">Notes for staff (optional)</label>
+
+                <!-- Notes are optional, so no validation rule is required. -->
+                <textarea asp-for="Notes"
+                          class="form-control"
+                          rows="3"></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+            <button type="submit" class="btn btn-primary">
+                Confirm Booking
+            </button>
+
         </form>
     </div>
 </section>
+
+@section Scripts {
+    <!--
+        Loads jQuery validation and jQuery unobtrusive validation.
+        The validation metadata is generated by the asp-for tag helpers
+        above and comes from BookingViewModel.
+    -->
+    <partial name="_ValidationScriptsPartial" />
+}

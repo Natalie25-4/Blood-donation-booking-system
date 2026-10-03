@@ -1,13 +1,16 @@
 @using BloodDonation.Domain
-@{ 
-    ViewData["Title"] = "Register to Donate"; 
-} 
- 
-<section class = "auth-section"> 
-  <div class = "auth-card"> 
-    <h1>Register to Donate</h1> 
- 
-    <form method="post" onsubmit="return validateRegistration()"> 
+@model BloodDonation.Web.Models.RegistrationViewModel
+
+@{
+    ViewData["Title"] = "Register to Donate";
+}
+
+<section class = "auth-section">
+  <div class = "auth-card">
+    <h1>Register to Donate</h1>
+
+    <form method="post" onsubmit="return validateRegistration()">
+
       @if (ViewData["RegisterErrors"] is string[] registerErrors)
       {
         <div class="alert alert-error" role="alert">
@@ -17,107 +20,133 @@
           }
         </div>
       }
-      <h2>Account Details</h2> 
-      <div class ="form-group"> 
-        <label for = "FullName">Full Name</label> 
-        <input type = "text" id = "FullName" name = "FullName" class = "form-control" required /> 
+
+      <h2>Account Details</h2>
+
+      <div class ="form-group">
+        <label for = "FullName">Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class = "validation-message"></span>
         <span id = "FullNameError" class = "validation-message"></span>
-      </div> 
-      <div class = "form-group"> 
-        <label for = "Email">Email</label> 
-        <input type = "email" id = "Email" name = "Email" class = "form-control" required /> 
+      </div>
+
+      <div class = "form-group">
+        <label for = "Email">Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class = "validation-message"></span>
         <span id = "EmailError" class = "validation-message"></span>
-      </div> 
-      <div class = "form-group"> 
-        <label for = "Password">Password</label> 
-        <input type = "password" id="Password" name="Password" class="form-control" required /> 
-        <small class = "form-text text-muted">At least 8 characters, with uppercase, lowercase, a number, and a symbol.</small> 
+      </div>
+
+      <div class = "form-group">
+        <label for = "Password">Password</label>
+        <input asp-for="Password" type = "password" class="form-control" />
+        <small class = "form-text text-muted">At least 8 characters, with uppercase, lowercase, a number, and a symbol.</small>
+        <span asp-validation-for="Password" class = "validation-message"></span>
         <span id = "PasswordError" class = "validation-message"></span>
-      </div> 
-      <div class = "form-group"> 
-        <label for = "ConfirmPassword">Confirm Password</label> 
-        <input type = "password" id="ConfirmPassword" name="ConfirmPassword" class="form-control" required /> 
+      </div>
+
+      <div class = "form-group">
+        <label for = "ConfirmPassword">Confirm Password</label>
+        <input asp-for="ConfirmPassword" type = "password" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class = "validation-message"></span>
         <span id = "ConfirmPasswordError" class = "validation-message"></span>
-      </div> 
- 
-      <h2>Donor Details</h2> 
-      <div class = "form-group"> 
-        <label for = "DateOfBirth">Date of Birth</label> 
-        <input type = "date" id = "DateOfBirth" name = "DateOfBirth" class = "form-control" required /> 
+      </div>
+
+      <h2>Donor Details</h2>
+
+      <div class = "form-group">
+        <label for = "DateOfBirth">Date of Birth</label>
+        <input asp-for="DateOfBirth" type = "date" class = "form-control" />
+        <span asp-validation-for="DateOfBirth" class = "validation-message"></span>
         <span id = "DateOfBirthError" class = "validation-message"></span>
-      </div> 
-      <div class = "form-group"> 
-        <label for = "WeightKg">Weight (kg)</label> 
-        <input type ="number" id = "WeightKg" name = "WeightKg" class = "form-control" step = "0.1" min = "@EligibilityRules.MinimumWeightKg" max = "200" required /> 
+      </div>
+
+      <div class = "form-group">
+        <label for = "WeightKg">Weight (kg)</label>
+        <input asp-for="WeightKg"
+               type = "number"
+               class = "form-control"
+               step = "0.1"
+               min = "@EligibilityRules.MinimumWeightKg"
+               max = "200" />
         <small class = "form-text text-muted">You must weigh at least @EligibilityRules.MinimumWeightKg kg to donate blood.</small>
+        <span asp-validation-for="WeightKg" class = "validation-message"></span>
         <span id = "WeightKgError" class = "validation-message"></span>
-      </div> 
- 
-      <h2>Eligibility Questionnaire</h2> 
-      <div class = "form-group"> 
-        <label for = "LastDonationDate">Last Donation Date</label> 
-        <input type = "date" id="LastDonationDate" name="LastDonationDate" class="form-control" /> 
-        <small class = "form-text text-muted">Leave blank if this is your first donation.</small> 
+      </div>
+
+      <h2>Eligibility Questionnaire</h2>
+
+      <div class = "form-group">
+        <label for = "LastDonationDate">Last Donation Date</label>
+        <input asp-for="LastDonationDate" type = "date" class="form-control" />
+        <small class = "form-text text-muted">Leave blank if this is your first donation.</small>
+        <span asp-validation-for="LastDonationDate" class = "validation-message"></span>
         <span id = "LastDonationDateError" class = "validation-message"></span>
-      </div> 
+      </div>
 
-      <div class = "form-group"> 
-        <label for = "TattooOrPiercingDate">Most Recent Tattoo or Piercing Date</label> 
-        <input type = "date" id="TattooOrPiercingDate" name="TattooOrPiercingDate" class="form-control" /> 
-        <small class = "form-text text-muted">Leave blank if you have not recently had a tattoo or piercing.</small> 
+      <div class = "form-group">
+        <label for = "TattooOrPiercingDate">Most Recent Tattoo or Piercing Date</label>
+        <input asp-for="TattooOrPiercingDate" type = "date" class="form-control" />
+        <small class = "form-text text-muted">Leave blank if you have not recently had a tattoo or piercing.</small>
+        <span asp-validation-for="TattooOrPiercingDate" class = "validation-message"></span>
         <span id = "TattooOrPiercingDateError" class = "validation-message"></span>
-      </div> 
+      </div>
 
-      <div class="form-check"> 
-        <input type = "checkbox" id="RecentIllness" name="RecentIllness" class="form-check-input" /> 
-        <label for = "RecentIllness" class="form-check-label">I currently have a cold, flu, sore throat, cold sore, stomach bug or other infection</label> 
+      <div class="form-check">
+        <input asp-for="RecentIllness" type = "checkbox" class="form-check-input" />
+        <label for = "RecentIllness" class="form-check-label">I currently have a cold, flu, sore throat, cold sore, stomach bug or other infection</label>
         <span id = "RecentIllnessError" class = "validation-message"></span>
-      </div> 
+      </div>
 
-      <div class="form-check"> 
-        <input type = "checkbox" id="RecentCovid" name="RecentCovid" class="form-check-input" /> 
-        <label for = "RecentCovid" class="form-check-label">I've had COVID-19 recently</label> 
-      </div> 
+      <div class="form-check">
+        <input asp-for="RecentCovid" type = "checkbox" class="form-check-input" />
+        <label for = "RecentCovid" class="form-check-label">I've had COVID-19 recently</label>
+      </div>
 
-      <div class="form-check"> 
-        <input type = "checkbox" id="Pregnant" name="Pregnant" class="form-check-input" /> 
-        <label for = "Pregnant" class="form-check-label">I am currently pregnant</label> 
-      </div> 
+      <div class="form-check">
+        <input asp-for="Pregnant" type = "checkbox" class="form-check-input" />
+        <label for = "Pregnant" class="form-check-label">I am currently pregnant</label>
+      </div>
 
-      <div class = "form-group"> 
-        <label for = "TravelledOverseas">Have you travelled overseas recently?</label> 
-        <select id = "TravelledOverseas" name = "TravelledOverseas" class = "form-control">
+      <div class = "form-group">
+        <label for = "TravelledOverseas">Have you travelled overseas recently?</label>
+
+        <select asp-for="TravelledOverseas" class = "form-control">
           <option value = "">Please select</option>
           <option value = "No">No</option>
           <option value = "Yes">Yes</option>
         </select>
+
         <small class = "form-text text-muted">Recent overseas travel may require additional eligibility checks.</small>
+        <span asp-validation-for="TravelledOverseas" class = "validation-message"></span>
         <span id = "TravelledOverseasError" class = "validation-message"></span>
-      </div> 
+      </div>
 
-      <div class="form-check"> 
-        <input type = "checkbox" id="RecentBloodTransfusion" name="RecentBloodTransfusion" class="form-check-input" /> 
-        <label for = "RecentBloodTransfusion" class="form-check-label">I've received a blood transfusion in the last 3 months</label> 
-      </div> 
+      <div class="form-check">
+        <input asp-for="RecentBloodTransfusion" type = "checkbox" class="form-check-input" />
+        <label for = "RecentBloodTransfusion" class="form-check-label">I've received a blood transfusion in the last 3 months</label>
+      </div>
 
-      <div class="form-check"> 
-        <input type = "checkbox" id="RecentDentalWork" name="RecentDentalWork" class="form-check-input" /> 
-        <label for = "RecentDentalWork" class="form-check-label">I've had dental treatment recently</label> 
-      </div> 
+      <div class="form-check">
+        <input asp-for="RecentDentalWork" type = "checkbox" class="form-check-input" />
+        <label for = "RecentDentalWork" class="form-check-label">I've had dental treatment recently</label>
+      </div>
 
-      <button type = "submit" class="btn btn-primary">Create Account</button> 
-    </form> 
-  </div> 
+      <button type = "submit" class="btn btn-primary">Create Account</button>
+    </form>
+  </div>
 </section>
 
 <script>
     function validateRegistration() {
         let isValid = true;
 
+        //clear the validation messages before checking the form again
         document.querySelectorAll(".validation-message").forEach(function (message) {
             message.textContent = "";
         });
 
+        //get the values entered into the registration form
         const fullName = document.getElementById("FullName").value.trim();
         const email = document.getElementById("Email").value.trim();
         const password = document.getElementById("Password").value;
@@ -128,16 +157,19 @@
         const tattooOrPiercingDate = document.getElementById("TattooOrPiercingDate").value;
         const travelledOverseas = document.getElementById("TravelledOverseas").value;
 
+        //full name is required
         if (fullName === "") {
             document.getElementById("FullNameError").textContent = "Please enter your full name.";
             isValid = false;
         }
 
+        //email is required
         if (email === "") {
             document.getElementById("EmailError").textContent = "Please enter your email address.";
             isValid = false;
         }
 
+        //check that the email entered has a valid format
         const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
 
         if (email !== "" && !emailPattern.test(email)) {
@@ -145,6 +177,7 @@
             isValid = false;
         }
 
+        //password must meet the account password requirements
         const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
         if (password === "") {
@@ -156,6 +189,7 @@
             isValid = false;
         }
 
+        //confirm password is required and must match the password
         if (confirmPassword === "") {
             document.getElementById("ConfirmPasswordError").textContent = "Please confirm your password.";
             isValid = false;
@@ -165,6 +199,7 @@
             isValid = false;
         }
 
+        //date of birth is required and must meet the donor age rules
         if (dateOfBirth === "") {
             document.getElementById("DateOfBirthError").textContent = "Please enter your date of birth.";
             isValid = false;
@@ -176,7 +211,7 @@
             let age = today.getFullYear() - birthDate.getFullYear();
             const monthDifference = today.getMonth() - birthDate.getMonth();
 
-            if (monthDifference < 0 || 
+            if (monthDifference < 0 ||
                 (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
             }
@@ -191,6 +226,7 @@
             }
         }
 
+        //weight is required and must meet the donor weight rules
         if (weight === "") {
             document.getElementById("WeightKgError").textContent = "Please enter your weight.";
             isValid = false;
@@ -204,6 +240,7 @@
             isValid = false;
         }
 
+        //last donation date cannot be in the future
         if (lastDonationDate !== "") {
             const today = new Date();
             const donationDate = new Date(lastDonationDate);
@@ -214,6 +251,7 @@
             }
         }
 
+        //check the tattoo or piercing date when one has been entered
         if (tattooOrPiercingDate !== "") {
             const today = new Date();
             const procedureDate = new Date(tattooOrPiercingDate);
@@ -231,6 +269,7 @@
             }
         }
 
+        //the travel question must be answered
         if (travelledOverseas === "") {
             document.getElementById("TravelledOverseasError").textContent = "Please select an option.";
             isValid = false;
@@ -239,3 +278,8 @@
         return isValid;
     }
 </script>
+
+@section Scripts {
+    <!--load jquery validation and unobtrusive validation for registration-->
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -2,6 +2,7 @@ using BloodDonation.Web.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using BloodDonation.Web.Models;
 
 namespace BloodDonation.Web.Controllers
 {
@@ -24,42 +25,44 @@ namespace BloodDonation.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(
-            string FullName,
-            string Email,
-            string Password,
-            string ConfirmPassword,
-            string DateOfBirth,
-            decimal WeightKg,
-            string? LastDonationDate,
-            string? TattooOrPiercingDate,
-            bool RecentIllness,
-            bool RecentCovid,
-            bool Pregnant,
-            string? TravelledOverseas,
-            bool RecentBloodTransfusion,
-            bool RecentDentalWork)
-        {
-            // Only the account (email, password, Donor role) is created here.
-            // Storing the donor details and questionnaire answers is part of the registration split (Part 4).
-            if (Password != ConfirmPassword)
-            {
-                ViewData["RegisterErrors"] = new[] { "Passwords do not match." };
-                return View();
-            }
+        public async Task<IActionResult> Register(RegistrationViewModel model)
+       {
+         //check the required registration fields before creating the account
+         if (!ModelState.IsValid)
+       {
+        return View(model);
+       }
 
-            var user = new IdentityUser { UserName = Email, Email = Email };
-            var result = await _userManager.CreateAsync(user, Password);
-            if (!result.Succeeded)
-            {
-                ViewData["RegisterErrors"] = result.Errors.Select(e => e.Description).ToArray();
-                return View();
-            }
+        // Only the account (email, password, Donor role)is created here.
+        // Storing the donor details and questionnaire answers is part of the registration split (Part 4).
+        if (model.Password != model.ConfirmPassword)
+       {
+          ViewData["RegisterErrors"] = new[] { "Passwords do not match." };
+          return View(model);
+       }
 
-            await _userManager.AddToRoleAsync(user, Roles.Donor);
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Dashboard", "Donor");
-        }
+        var user = new IdentityUser
+     {
+        UserName = model.Email,
+        Email = model.Email
+    };
+
+       var result = await _userManager.CreateAsync(user, model.Password);
+
+       if (!result.Succeeded)
+       {
+        ViewData["RegisterErrors"] = result.Errors
+            .Select(e => e.Description)
+            .ToArray();
+
+        return View(model);
+      }
+
+        await _userManager.AddToRoleAsync(user, Roles.Donor);
+        await _signInManager.SignInAsync(user, isPersistent: false);
+
+        return RedirectToAction("Dashboard", "Donor");
+}
 
         [HttpGet]
         public IActionResult Login(string? returnUrl = null)
